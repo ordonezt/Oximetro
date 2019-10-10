@@ -1,8 +1,8 @@
 /*
- * powerDownTest.h
+ * oximetro.h
  *
  *  Created on: 4 oct. 2019
- *      Author: brousse
+ *      Author: ordonezt
  */
 
 #ifndef OXIMETRO_H_

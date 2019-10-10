@@ -2,7 +2,7 @@
  * my_timer.c
  *
  *  Created on: 4 oct. 2019
- *      Author: brousse
+ *      Author: ordonezt
  */
 
 
@@ -29,6 +29,12 @@ ISR(TIMER0_COMPA_vect)
 
 //	 if(n == 10000)					//20 seg
 //		 flags.bits.sleep_time = 1;
+
+	 if(n%5 == 0)					//5 ms
+		 flags.bits.adc_time = 1;
+
+	 if(n%40 == 0)
+		 flags.bits.show_time = 1;	//40 ms
 
 	 n %= 10000;
 	 n++;

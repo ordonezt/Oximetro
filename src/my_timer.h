@@ -2,7 +2,7 @@
  * my_timer.h
  *
  *  Created on: 4 oct. 2019
- *      Author: brousse
+ *      Author: ordonezt
  */
 
 #ifndef MY_TIMER_H_

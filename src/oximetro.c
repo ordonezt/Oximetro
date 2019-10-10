@@ -1,18 +1,18 @@
 /*
- * powerDownTest.c
+ * oximetro.c
  *
  *	Es una aplicacion de 2 estados, normal y sleep
  *	en normal blinkea un led y prende otro indicando que esta encendido y en sleep se va a dormir y apaga todo
  *	mediante un boton entramos y salimos del estado sleep
  *
  *  Created on: 4 oct. 2019
- *      Author: Tomas
+ *      Author: ordonezt
  */
 
 #define TEST1 (1)
 #define TEST2 (2)
 
-#define TEST TEST2
+#define TEST TEST1
 
 
 
@@ -91,33 +91,49 @@ int main(void)
 #if(TEST == TEST2)
 int main(void)
 {
-//	stateMain_t state;
-//
-//	while(1)
-//	{
-//		switch(state)
-//		{
-//
-//		}
-//
-//		if(flags.bits.adc_time)
-//		{
-//
-//		}
-//
-//		if(flags.bits.show_time)
-//		{
+	initTimer();
+	initPWM();
+	initADC();
+
+	while(1)
+	{
+
+		if(flags.bits.adc_time)
+		{
+			flags.bits.adc_time = 0;
+			ADCSRA |= 1 << ADSC;	//Start conversion
+		}
+
+		if(flags.bits.show_time)
+		{
+			flags.bits.show_time = 0;
+
+			if(ADC_buff[RED][20] > 512)
+			{
+				if(OCR2A + 5 < 255)
+					OCR2A += 5;
+				if(OCR2B - 5 > 0)
+					OCR2B -= 5;
+			}
+			if(ADC_buff[RED][20] < 512)
+			{
+				if(OCR2B + 5 < 255)
+					OCR2B += 5;
+				if(OCR2A - 5 > 0)
+					OCR2A -= 5;
+			}
 //			calculateBPM();
 //			calculateSpO2();
 //			updateScreen();
-//		}
+
+		}
 //
 //		if(flags.bits.watchdog_time)
 //		{
 //			if(isFinger())
 //				feedWatchdog();
 //		}
-//	}
+	}
 	return 0;
 }
 #endif

@@ -2,7 +2,7 @@
  * my_power.c
  *
  *  Created on: 4 oct. 2019
- *      Author: brousse
+ *      Author: ordonezt
  */
 #include "my_include.h"
 

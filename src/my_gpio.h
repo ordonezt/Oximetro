@@ -23,6 +23,10 @@ typedef struct{
 	bool wasRelease;
 }key_t;
 
+typedef enum{ RED = 0, IR}led_t;
+
+extern volatile led_t led;
+
 extern volatile key_t button;
 
 #endif /* MY_GPIO_H_ */

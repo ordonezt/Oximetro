@@ -2,7 +2,7 @@
  * my_include.h
  *
  *  Created on: 4 oct. 2019
- *      Author: brousse
+ *      Author: ordonezt
  */
 
 #ifndef MY_INCLUDE_H_
@@ -19,6 +19,8 @@
 #include "my_adc.h"
 #include "my_pwm.h"
 #include "oximetro.h"
+#include "my_dataManagment.h"
+#include "my_watchdog.h"
 
 typedef struct		//Estructura para registro CTIME
 {
