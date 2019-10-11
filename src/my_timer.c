@@ -36,6 +36,9 @@ ISR(TIMER0_COMPA_vect)
 	 if(n%40 == 0)
 		 flags.bits.show_time = 1;	//40 ms
 
+	 if(n == 1000)
+		 flags.bits.check_finger_time = 1;	//1 seg
+
 	 n %= 10000;
 	 n++;
 }

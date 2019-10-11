@@ -33,7 +33,7 @@ typedef struct		//Estructura para registro CTIME
 			uint8_t led_flag:1;
 			uint8_t debounce_time:1;
 			uint8_t show_time:1;
-			uint8_t watchdog_time:1;
+			uint8_t check_finger_time:1;
 			uint8_t adc_time:1;
 			uint8_t RESERVED:2;
 		}bits;

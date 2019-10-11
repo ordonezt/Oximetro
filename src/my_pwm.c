@@ -13,7 +13,7 @@ void initPWM(void)
 
 	//OC2A -> PB3
 	//OC2B -> PD3
-	DDRB |= 0x01 << DDB5;		//Pin C5 salida
+	DDRB |= 0x01 << DDB3;		//Pin B3 salida
 	DDRD |= 0x01 << DDD3;		//Pin D3 salida
 
 	TCCR2A = 0b10100011; 		//Pone en low OC2A cuando llega al match, lo mismo con OC2B, modo fast PWM
@@ -23,5 +23,4 @@ void initPWM(void)
 	OCR2B = 0;
 
 	TIMSK2 = 0;				//No interrumpo por nada
-//	TIMSK2 = 0b00000110;	//Interrumpe por Match A y Match B
 }

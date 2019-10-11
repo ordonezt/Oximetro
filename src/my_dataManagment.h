@@ -14,6 +14,10 @@
 
 extern volatile uint16_t ADC_buff[BUFFER_HEIGHT][BUFFER_LENGTH];
 
+extern volatile uint16_t ADC_index;
+
 uint16_t filter(uint16_t sample);
+
+bool isFinger(void);
 
 #endif /* MY_DATAMANAGMENT_H_ */
