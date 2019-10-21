@@ -17,8 +17,23 @@ void initADC(void)
 
 ISR(ADC_vect)
 {
+	static uint8_t mini_counter = 0;
+
+	flags.conversion_done = true;
+
 	ADC_buff[led][ADC_index] = filter(ADCL | (ADCH << 8));	//Cuidado: el datasheet especifica primero leer ADCL y desp ADCH
 
-	ADC_index++;
-	ADC_index %= BUFFER_LENGTH;
+	if(mini_counter)
+	{
+		mini_counter = 0;
+		ADC_index++;
+	}
+	mini_counter++;
+
+	if(ADC_index == BUFFER_LENGTH)
+	{
+		ADC_index = 0;
+		mini_counter = 0;
+		flags.sample_buffer_full = true;
+	}
 }

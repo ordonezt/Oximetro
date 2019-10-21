@@ -8,7 +8,8 @@
 #ifndef OXIMETRO_H_
 #define OXIMETRO_H_
 
-typedef enum{ NORMAL = 0, SLEEP }statePwr_t;
+typedef enum{ AWAKE, SLEEP }statePwr_t;
+typedef enum{ WAITING, WORKING}stateWork_t;
 
 
 #endif /* OXIMETRO_H_ */

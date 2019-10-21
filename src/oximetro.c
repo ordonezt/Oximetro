@@ -16,7 +16,7 @@
 #define TEST2 (2)
 #define TEST3 (3)
 
-#define TEST TEST2
+#define TEST TEST4
 
 
 
@@ -28,7 +28,7 @@ volatile flags_t flags = {0};
 
 int main(void)
 {
-	statePwr_t state = NORMAL;
+	statePwr_t state = AWAKE;
 
 	initTimer();	//Inicializo el timer cada 1 ms
 	initGpio();		//Inicializo entradas y salidas
@@ -41,7 +41,7 @@ int main(void)
 	{
 		switch(state)
 		{
-			case NORMAL:
+			case AWAKE:
 
 				if(flags.bits.led_flag)
 				{
@@ -71,13 +71,13 @@ int main(void)
 				if(button.wasRelease == true) //Espero a que suelte el boton aca, por que si no vuelvo a dormir
 				{
 					button.wasRelease = false;
-					state = NORMAL;
+					state = AWAKE;
 				}
 
 				break;
 
 			default:
-				state = NORMAL;
+				state = AWAKE;
 		}
 
 		if(flags.bits.debounce_time)
@@ -170,7 +170,7 @@ int main(void)
 
 int main(void)
 {
-	statePwr_t state = NORMAL;
+	statePwr_t state = AWAKE;
 
 	initTimer();	//Inicializo el timer cada 1 ms
 	initGpio();		//Inicializo entradas y salidas
@@ -183,7 +183,7 @@ int main(void)
 	{
 		switch(state)
 		{
-			case NORMAL:
+			case AWAKE:
 
 				if(flags.bits.led_flag)
 				{
@@ -213,13 +213,13 @@ int main(void)
 				if(button.wasRelease == true) //Espero a que suelte el boton aca, por que si no vuelvo a dormir
 				{
 					button.wasRelease = false;
-					state = NORMAL;
+					state = AWAKE;
 				}
 
 				break;
 
 			default:
-				state = NORMAL;
+				state = AWAKE;
 		}
 
 		if(flags.bits.debounce_time)
@@ -237,5 +237,103 @@ int main(void)
 
 		}
 	}
+}
+#endif
+
+#if(TEST == TEST4)
+
+int main(void)
+{
+	statePwr_t power_state = AWAKE;
+	stateWork_t work_state = WAITING;
+
+	initSystem();
+
+	while(1)
+	{
+		//Primera maquina de estados define el estado de poder /**TODO pasar a vector de punteros a funcion**/
+		switch(power_state)
+		{
+			case AWAKE:
+
+				if(flags.debounce_time)
+				{
+					flags.debounce_time = false;
+					debounce();
+				}
+
+				if(flags.show_time)
+				{
+					flags.show_time = false;
+//					updateScreen();		/*TODO*/
+				}
+
+				if(flags.adc_time)
+				{
+					flags.adc_time = false;
+					ADCSRA |= 1 << ADSC;	//Start conversion
+				}
+
+				if(flags.check_finger_time)
+				{
+					flags.check_finger_time = false;
+					/*TODO como darme cuenta que no hay un dedo*/
+				}
+
+				//Segunda maquina de estados /*TODO pasar a puntero a funcion*/
+				switch(work_state)
+				{
+				case WAITING:
+					led = IR;
+//					display(NA, NA);	/*TODO*/
+					if(flags.is_finger)
+					{
+						work_state = WORKING;
+						ADC_index = 0;
+					}
+					break;
+				case WORKING:
+					if(flags.conversion_done)
+					{
+						flags.conversion_done = false;
+						led = !led;
+					}
+					if(flags.sample_buffer_full)
+					{
+						flags.sample_buffer_full = false;
+//						display(calculateSpO2(), calculateBPM());
+					}
+					if(!flags.is_finger)
+						work_state = WAITING;
+					break;
+				default:
+					work_state = WAITING;
+					break;
+				}
+
+				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
+				{
+					button.wasRelease = false;
+					power_state = SLEEP;
+				}
+				break;
+
+			case SLEEP:
+				goToSleep();
+				//Si llegue aca es por que desperte, voy a estado normal
+				if(button.wasRelease == true) //Espero a que suelte el boton aca, por que si no vuelvo a dormir
+				{
+					button.wasRelease = false;
+					power_state = AWAKE;
+					work_state = WAITING;
+				}
+				break;
+
+			default:
+				power_state = AWAKE;
+				break;
+		}
+	}
+	return 0;
 }
 #endif

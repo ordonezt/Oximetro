@@ -15,7 +15,7 @@
 void initGpio(void);
 void debounce(void);
 
-typedef enum{ NO_PRESSED = 0, PRESSED}keyState_t;
+typedef enum{NO_PRESSED, PRESSED}keyState_t;
 
 typedef struct{
 	keyState_t state;
@@ -23,7 +23,7 @@ typedef struct{
 	bool wasRelease;
 }key_t;
 
-typedef enum{ RED = 0, IR}led_t;
+typedef enum{RED, IR}led_t;
 
 extern volatile led_t led;
 

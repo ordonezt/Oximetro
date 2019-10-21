@@ -23,21 +23,21 @@ ISR(TIMER0_COMPA_vect)
 
 	 //Led en PD3
 	 if(n%250 == 0)					//250 ms
-		 flags.bits.led_flag = 1;
+		 flags.led_flag = true;
 
-	 flags.bits.debounce_time = 1;	//1 ms
+	 flags.debounce_time = true;	//1 ms
 
 //	 if(n == 10000)					//20 seg
 //		 flags.bits.sleep_time = 1;
 
 	 if(n%5 == 0)					//5 ms
-		 flags.bits.adc_time = 1;
+		 flags.adc_time = true;
 
 	 if(n%40 == 0)
-		 flags.bits.show_time = 1;	//40 ms
+		 flags.show_time = true;	//40 ms
 
 	 if(n == 1000)
-		 flags.bits.check_finger_time = 1;	//1 seg
+		 flags.check_finger_time = true;	//1 seg
 
 	 n %= 10000;
 	 n++;
