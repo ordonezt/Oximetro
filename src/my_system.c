@@ -12,7 +12,8 @@ void initSystem(void)
 {
 	initTimer();	//Inicializo el timer cada 1 ms
 	initGpio();		//Inicializo entradas y salidas
-
+	initADC();
+	initPWM();
 	set_sleep_mode(SLEEP_MODE_PWR_DOWN);//Selecciono power-down mode
 
 	sei();	//Habilito las interrupciones

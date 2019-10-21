@@ -241,7 +241,21 @@ int main(void)
 #endif
 
 #if(TEST == TEST4)
-
+/*
+ * Señal de entrada ADC -> ADC3 -> PC3 -> 26
+ * Señal de DC (primera etapa) -> PC2 - > 25
+ * Led ROJO -> OC2A -> PB3 -> 17
+ * Led InfraRojo -> OC2B -> PD3 -> 5
+ */
+/*
+ * TODO:
+ * 		-Inicializar bien
+ * 		-Hacer las maquinas con punteros a funcion
+ * 		-Seguir pensando mejor forma de chequear si hay dedo
+ * 			Lo ideal es medir con ADC2 y ver si es cerca de 5V, pero complica la logica, por simplicidad lo hago con entrada digital
+ * 		-Pantalla o displays
+ * 		-PROBARLO
+ */
 int main(void)
 {
 	statePwr_t power_state = AWAKE;
@@ -278,6 +292,8 @@ int main(void)
 				{
 					flags.check_finger_time = false;
 					/*TODO como darme cuenta que no hay un dedo*/
+					/*Puedo leer digitalmente la salida de la primer etapa, si es HIGH es por que no hay dedo, aunque lo ideal seria leer analogicamente*/
+
 				}
 
 				//Segunda maquina de estados /*TODO pasar a puntero a funcion*/
