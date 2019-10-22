@@ -50,3 +50,8 @@ void debounce(void)
 
 	prev = curr;
 }
+
+void IsFinger(void) {
+	//TODO ENORME: chequear dedo con el led
+	/*Puedo leer digitalmente la salida de la primer etapa, si es HIGH es por que no hay dedo, aunque lo ideal seria leer analogicamente*/
+}

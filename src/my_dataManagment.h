@@ -14,7 +14,7 @@
 
 extern volatile uint16_t ADC_buff[BUFFER_HEIGHT][BUFFER_LENGTH];
 
-extern volatile uint16_t ADC_index;
+extern volatile uint16_t RED_index, IR_index;
 
 uint16_t filter(uint16_t sample);
 

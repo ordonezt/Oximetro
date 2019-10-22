@@ -21,23 +21,22 @@ ISR(TIMER0_COMPA_vect)
 {
 	 static uint16_t n = 0;
 
-	 //Led en PD3
-	 if(n%250 == 0)					//250 ms
-		 flags.led_flag = true;
-
-	 flags.debounce_time = true;	//1 ms
+	 debounce();					//1 ms
 
 //	 if(n == 10000)					//20 seg
 //		 flags.bits.sleep_time = 1;
 
 	 if(n%5 == 0)					//5 ms
-		 flags.adc_time = true;
+		 ADCSRA |= 1 << ADSC;		//Start conversion
 
 	 if(n%40 == 0)
-		 flags.show_time = true;	//40 ms
+		 UpdateDisplay();	//40 ms
 
-	 if(n == 1000)
-		 flags.check_finger_time = true;	//1 seg
+	 if(n == 1000) {
+		if (!IsFinger()) {	//1 seg
+			flags.no_finger_times++;
+		}
+	 }
 
 	 n %= 10000;
 	 n++;
