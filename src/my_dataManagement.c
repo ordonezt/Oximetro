@@ -8,7 +8,8 @@
 #include "my_include.h"
 
 volatile uint16_t ADC_buff[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
-volatile uint16_t ADC_index = 0;
+volatile uint16_t RED_index = 0;
+volatile uint16_t IR_index = 0;
 
 uint16_t filter(uint16_t sample)
 {

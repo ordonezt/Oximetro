@@ -21,22 +21,30 @@ void initADC(void)
 ISR(ADC_vect)
 {
 	static uint8_t mini_counter = 0;
+	uint16_t aux_index;
+	uint16_t conversion;
 
-	flags.conversion_done = true;
 
-	ADC_buff[led][ADC_index] = filter(ADCL | (ADCH << 8));	//Cuidado: el datasheet especifica primero leer ADCL y desp ADCH
 
-	if(mini_counter)
-	{
-		mini_counter = 0;
-		ADC_index++;
+	if (!flags.conversion_done) {
+
+		flags.conversion_done = true;
+
+		conversion = filter(ADCL | (ADCH << 8));	//Cuidado: el datasheet especifica primero leer ADCL y desp ADCH
+
+		if (led == RED) {
+			ADC_buff[led][RED_index] = conversion;
+			RED_index++;
+		} else {
+			ADC_buff[led][IR_index] = conversion;
+			IR_index++;
+		}
+
+		if(IR_index == BUFFER_LENGTH && RED_index == BUFFER_LENGTH)
+		{
+			RED_index = 0;
+			IR_index = 0;
+			flags.sample_buffer_full = true;
+		}
 	}
-	mini_counter++;
-
-	if(ADC_index == BUFFER_LENGTH)
-	{
-		ADC_index = 0;
-		mini_counter = 0;
-		flags.sample_buffer_full = true;
-	}
-}
+ }

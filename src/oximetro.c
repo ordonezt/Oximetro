@@ -270,32 +270,6 @@ int main(void)
 		{
 			case AWAKE:
 
-				if(flags.debounce_time)
-				{
-					flags.debounce_time = false;
-					debounce();
-				}
-
-				if(flags.show_time)
-				{
-					flags.show_time = false;
-//					updateScreen();		/*TODO*/
-				}
-
-				if(flags.adc_time)
-				{
-					flags.adc_time = false;
-					ADCSRA |= 1 << ADSC;	//Start conversion
-				}
-
-				if(flags.check_finger_time)
-				{
-					flags.check_finger_time = false;
-					/*TODO como darme cuenta que no hay un dedo*/
-					/*Puedo leer digitalmente la salida de la primer etapa, si es HIGH es por que no hay dedo, aunque lo ideal seria leer analogicamente*/
-
-				}
-
 				//Segunda maquina de estados /*TODO pasar a puntero a funcion*/
 				switch(work_state)
 				{

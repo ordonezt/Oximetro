@@ -7,3 +7,7 @@
 
 
 #include "my_include.h"
+
+void updateDisplay(void) {
+	//TODO hacer la rutina de refresco según display elegido
+}
