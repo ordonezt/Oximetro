@@ -30,10 +30,10 @@ ISR(TIMER0_COMPA_vect)
 		 ADCSRA |= 1 << ADSC;		//Start conversion
 
 	 if(n%40 == 0)
-		 UpdateDisplay();	//40 ms
+		 updateDisplay();	//40 ms
 
 	 if(n == 1000) {
-		if (!IsFinger()) {	//1 seg
+		if (!isFinger()) {	//1 seg
 			flags.no_finger_times++;
 		}
 	 }

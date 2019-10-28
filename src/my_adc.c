@@ -18,33 +18,42 @@ void initADC(void)
 	DIDR0 |= 0x01 << ADC3D;
 }
 
+//ISR(ADC_vect)
+//{
+//	//Solo entro si ya lei el dato anterior
+//	if (!flags.conversion_done) {
+//
+//		flags.conversion_done = true;
+//
+//		shiftBuffer(raw[led], N_RAW);
+//		raw[led][0] = ADCL | (ADCH << 8);	//Cuidado: el datasheet especifica primero leer ADCL y desp ADCH
+//
+//		if (led == RED) {
+//			smooth[led][RED_index] = filter(raw[led], h, N);
+//			RED_index++;
+//		} else {
+//			smooth[led][IR_index] = filter(raw[led], h, N);
+//			IR_index++;
+//		}
+//
+//		if(IR_index == BUFFER_LENGTH && RED_index == BUFFER_LENGTH)
+//		{
+//			RED_index = 0;
+//			IR_index = 0;
+//			flags.sample_buffer_full = true;
+//		}
+//	}
+//}
+
 ISR(ADC_vect)
 {
-	static uint8_t mini_counter = 0;
-	uint16_t aux_index;
-	uint16_t conversion;
-
-
-
-	if (!flags.conversion_done) {
-
+	//Solo entro si ya lei el dato anterior
+	if(!flags.conversion_done)
+	{
 		flags.conversion_done = true;
 
-		conversion = filter(ADCL | (ADCH << 8));	//Cuidado: el datasheet especifica primero leer ADCL y desp ADCH
-
-		if (led == RED) {
-			ADC_buff[led][RED_index] = conversion;
-			RED_index++;
-		} else {
-			ADC_buff[led][IR_index] = conversion;
-			IR_index++;
-		}
-
-		if(IR_index == BUFFER_LENGTH && RED_index == BUFFER_LENGTH)
-		{
-			RED_index = 0;
-			IR_index = 0;
-			flags.sample_buffer_full = true;
-		}
+		//get raw signal
+		shiftBuffer(raw[led], N_RAW);
+		raw[led][0] = ADCL | (ADCH << 8);	//Cuidado: el datasheet especifica primero leer ADCL y desp ADCH
 	}
- }
+}

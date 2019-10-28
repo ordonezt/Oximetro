@@ -277,16 +277,15 @@ int main(void)
 					led = IR;
 //					display(NA, NA);	/*TODO*/
 					if(flags.is_finger)
-					{
 						work_state = WORKING;
-						ADC_index = 0;
-					}
 					break;
 				case WORKING:
+
 					if(flags.conversion_done)
 					{
 						flags.conversion_done = false;
 						led = !led;
+						processData();
 					}
 					if(flags.sample_buffer_full)
 					{
