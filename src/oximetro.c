@@ -284,12 +284,15 @@ int main(void)
 					if(flags.conversion_done)
 					{
 						flags.conversion_done = false;
-						led = !led;
 						processData();
+						led = !led;
 					}
-					if(flags.sample_buffer_full)
+					if(flags.beat_detected)
 					{
-						flags.sample_buffer_full = false;
+						flags.beat_detected = false;
+						// obtenemos min y max
+						// obtenemos R
+						// ontenemos
 //						display(calculateSpO2(), calculateBPM());
 					}
 					if(!flags.is_finger)
