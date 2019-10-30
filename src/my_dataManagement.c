@@ -94,48 +94,55 @@ void shiftBuffer(volatile uint16_t *buffer, uint8_t length)
 
 void processData(void)
 {
-	uint8_t i, flag_peak, counter_max, flag_search_max, min, max = 0, flag_ready;
+	static uint8_t Dmax[2], pos_peak[2];
+	static uint8_t Dmin;
+
+	uint8_t i, new_peak = 0, pos_aux = 0, aux = 0;
+	uint8_t counter_max, flag_search_max, min, flag_ready;
+
+	pos_peak[led]++;
+
 	//filter raw signal
 	shiftBuffer(smooth[led], N_SMOOTH);
 	smooth[led][0] = filter(raw[led], h, N_RAW);
 
 	//obtain signal's derivative
 	shiftBuffer(gradient[led], N_GRADIENT);
-	gradient[led][0] = smooth[led][0] - smooth[led][3];//remember the derivative is shifted by 1 sample
+	gradient[led][0] = smooth[led][0] - smooth[led][2];//remember the derivative is shifted by 1 sample
 
 	//check for derivative peak(rising edge)
-	flag_peak = 1;
-	for(i = 1; i < N_GRADIENT; i++)
-		if(gradient[led][i] > gradient[led][0])
+	for(i = 1; i < N_GRADIENT; i++){
+		if(gradient[led][i] > aux)
 		{
-			flag_peak = 0;
-			break;
+			aux = gradient[led][i];
+			pos_aux = i;
 		}
-
-	if(flag_peak)
-	{
-		flag_peak = 0;
-		//start search for next relative maximum (on new data)
-		max = smooth[led][1];
-		flag_search_max = 1;
-		counter_max = 0;
-		//search for previous relative minimum (on old data)
-		min = smooth[led][1];
-		for(i = 2; i < (MIN_WINDOW + 2); i++)
-			if(smooth[led][i] < min)
-				min = smooth[led][i];
 	}
 
-	if(flag_search_max)
-	{
-		if(counter_max >= (MAX_WINDOW - 1))
-		{
-			flag_search_max = 0;
-			flag_ready = 1;
-		}
-		if(smooth[led][0] > max)
-		{
-			max = smooth[led][0];
-		}//else{flag_search_max=0;flag_ready=1;}
+	if(pos_aux != pos_peak[led]){
+		new_peakled = 1;
+		pos_peak[led] = pos_aux;
+	}
+	if(new_peak == 1 && pos_peak >= MAX_WINDOW){ // TODO Pensar, sacar afuera de la
+		flags.beat_detected = true;
+		new_peak = 0;
+	}
+}
+
+void get_min_max_values(void){
+	int i;
+
+	min = smooth[led][pos_peak];
+
+	for(i = pos_peak; i < (pos_peak + MIN_WINDOW); i++){
+		if(smooth[led][i] < min)
+			min = smooth[led][i];
+	}
+
+	max = smooth[led][pos_peak];
+
+	for(i = pos_peak; i > (pos_peak - MAX_WINDOW); i--){
+		if(smooth[led][i] > max)
+			max = smooth[led][i];
 	}
 }
