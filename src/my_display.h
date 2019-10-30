@@ -10,4 +10,6 @@
 
 #define NA 	0xFF
 
+void updateDisplay(void);
+
 #endif /* MY_DISPLAY_H_ */

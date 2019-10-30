@@ -9,8 +9,10 @@
 #define MY_INCLUDE_H_
 
 #include <avr/io.h>
+#include <compat/twi.h>
 #include <avr/sleep.h>
 #include <avr/interrupt.h>
+#include <string.h>
 
 #include "my_power.h"
 #include "my_extInt.h"
@@ -23,10 +25,11 @@
 #include "my_display.h"
 #include "my_watchdog.h"
 #include "my_system.h"
+#include "my_twi.h"
 
 #define MAX_NO_FINGER_TIME 7
 
-typedef struct		//Estructura para registro CTIME
+typedef struct		//Estructura para manejo de flags del sistema
 {
 	uint16_t sleep_time:1;	//No tiene uso
 	uint16_t led_flag:1;
