@@ -13,4 +13,12 @@ void goToSleep(void)
 	//Poner puertos como entradas pull down
 	initExtInt();
 	//Activar sleep
+
+	/*
+	 * Como se pone en power down mode y como lo despierto?
+	 *
+	 * Segun datasheet tengo que reconfigurar el pll y los divisores de clock... muy complejo
+	 * conviene eso?
+	 * o apago las cosas?
+	 */
 }

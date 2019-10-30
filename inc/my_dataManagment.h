@@ -32,8 +32,7 @@ typedef struct {
 extern const float h[N_RAW];
 extern const uint8_t A;
 extern const uint8_t B;
-extern cuenta_muestra;
-extern uint8_t pos_peak[2];
+extern volatile uint8_t cuenta_muestras;
 
 extern uint16_t raw[BUFFER_HEIGHT][N_RAW];
 extern volatile uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH];

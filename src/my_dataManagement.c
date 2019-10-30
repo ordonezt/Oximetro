@@ -27,7 +27,7 @@ uint16_t raw[BUFFER_HEIGHT][N_RAW] = {0};
 volatile uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
 volatile uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 
-volatile cuenta_muestras = 0;
+volatile uint8_t cuenta_muestras = 0;
 uint8_t pos_peak[2] = {0,0};
 
 bool isFinger(void)
@@ -98,10 +98,10 @@ void shiftBuffer(volatile uint16_t *buffer, uint8_t length)
 
 void process(pulse_t *pulse)
 {
-	static new_peak[2]={0,0};
+	static uint8_t new_peak[2]={0,0};
 
 	uint8_t i, pos_aux = 0, aux = 0;
-	uint8_t counter_max, flag_search_max, min, flag_ready;
+	uint8_t new_peakled = 0;
 
 	pulse->pos_Dmax++;
 
@@ -141,24 +141,24 @@ void process(pulse_t *pulse)
 }
 
 void get_min_max_values(pulse_t *Data[]){
-	int i, led;
+	int i, led_local;
 	uint16_t min, max;
 
-	for (led = RED; led <= IR; led++) {
-		min = smooth[led][Data[led]->pos_Dmax];
+	for (led_local = RED; led_local <= IR; led_local++) {
+		min = smooth[led_local][Data[led_local]->pos_Dmax];
 
-		for(i = Data[led]->pos_Dmax; i < (Data[led]->pos_Dmax + MIN_WINDOW); i++){
-			if(smooth[led][i] < min)
-				min = smooth[led][i];
+		for(i = Data[led_local]->pos_Dmax; i < (Data[led_local]->pos_Dmax + MIN_WINDOW); i++){
+			if(smooth[led_local][i] < min)
+				min = smooth[led_local][i];
 		}
 
-		max = smooth[led][Data[led]->pos_Dmax];
+		max = smooth[led_local][Data[led_local]->pos_Dmax];
 
-		for(i = Data[led]->pos_Dmax; i > (Data[led]->pos_Dmax - MAX_WINDOW); i--){
-			if(smooth[led][i] > max)
-				max = smooth[led][i];
+		for(i = Data[led_local]->pos_Dmax; i > (Data[led_local]->pos_Dmax - MAX_WINDOW); i--){
+			if(smooth[led_local][i] > max)
+				max = smooth[led_local][i];
 		}
-		Data[led]->Min = min;
-		Data[led]->Max = max;
+		Data[led_local]->Min = min;
+		Data[led_local]->Max = max;
 	}
 }

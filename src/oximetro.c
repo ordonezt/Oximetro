@@ -32,7 +32,6 @@ int main(void) {
     statePwr_t power_state = AWAKE;
     stateWork_t work_state = WAITING;
 
-    led_t led = RED;
     pulse_t Red_p;
     Red_p.Led = RED;
     pulse_t Ir_p;

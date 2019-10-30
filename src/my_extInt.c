@@ -2,20 +2,26 @@
  * my_extInt.c
  *
  *  Created on: 4 oct. 2019
- *      Author: brousse
+ *      Author: ordonezt
  */
 #include "my_include.h"
 
 void initExtInt(void)
 {
-	//Boton con pull up a masa
-	Chip_IOCON_PinMuxSet(LPC_IOCON, BTN_PORT, BTN_PIN, IOCON_FUNC1 | IOCON_MODE_PULLUP);
+	//Interrumpe por nivel
+	LPC_SYSCTL->EXTMODE |= 1 << EINT0;
 
+	//Interrumpe por low-level
+	LPC_SYSCTL->EXTPOLAR &= ~(1 << EINT0);
+
+	//Habilito la interrupcion
+	NVIC_EnableIRQ(EINT0_IRQn);
 }
 
 void delExtInt(void)
 {
 	//Desactivo interrupciones
+	NVIC_DisableIRQ(EINT0_IRQn);
 }
 
 void EINT0_IRQHandler(void)

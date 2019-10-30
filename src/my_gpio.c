@@ -2,12 +2,13 @@
  * my_gpio.c
  *
  *  Created on: 6 oct. 2019
- *      Author: brousse
+ *      Author: ordonezt
  */
 
 #include "my_include.h"
 
 volatile key_t button = {0};
+volatile led_t led = RED;
 
 void initGpio(void)
 {
@@ -22,8 +23,6 @@ void initGpio(void)
 	//Entradas /*TODO*/
 	Chip_IOCON_PinMuxSet(LPC_IOCON, BTN_PORT, BTN_PIN, IOCON_FUNC0 | IOCON_MODE_PULLUP);
 	Chip_GPIO_WriteDirBit(LPC_GPIO, BTN_PORT, BTN_PIN, false);
-
-
 }
 
 void debounce(void)
