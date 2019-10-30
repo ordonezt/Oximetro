@@ -12,8 +12,15 @@
 
 #define N_TIMES	6
 
+#define HEARTBEAT_PORT		0
+#define HEARTBEAT_PIN		22
+
+#define BTN_PORT		2
+#define BTN_PIN			10
+
 void initGpio(void);
 void debounce(void);
+bool getKey(void);
 
 typedef enum{NO_PRESSED, PRESSED}keyState_t;
 

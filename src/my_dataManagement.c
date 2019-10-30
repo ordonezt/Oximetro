@@ -22,7 +22,8 @@ const float h[N_RAW] = {
 const uint8_t A = 110;
 const uint8_t B = 25;
 
-volatile uint16_t raw[BUFFER_HEIGHT][N_RAW] = {0};
+uint16_t raw[BUFFER_HEIGHT][N_RAW] = {0};
+
 volatile uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
 volatile uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 

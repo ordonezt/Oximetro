@@ -14,7 +14,7 @@ void initSystem(void)
 	initGpio();		//Inicializo entradas y salidas
 	initADC();
 	initPWM();
-	set_sleep_mode(SLEEP_MODE_PWR_DOWN);//Selecciono power-down mode
+//	set_sleep_mode(SLEEP_MODE_PWR_DOWN);//Selecciono power-down mode
 
-	sei();	//Habilito las interrupciones
+//	sei();	//Habilito las interrupciones
 }
