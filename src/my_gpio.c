@@ -8,7 +8,6 @@
 #include "my_include.h"
 
 volatile key_t button = {0};
-volatile led_t led = RED;
 
 void initGpio(void)
 {

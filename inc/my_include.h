@@ -8,16 +8,8 @@
 #ifndef MY_INCLUDE_H_
 #define MY_INCLUDE_H_
 
-<<<<<<< HEAD:src/my_include.h
-#include <avr/io.h>
-#include <compat/twi.h>
-#include <avr/sleep.h>
-#include <avr/interrupt.h>
-#include <string.h>
 
-=======
 #include "board.h"
->>>>>>> d17e67473b46f8075424f19aa6d8c4e035d858d1:inc/my_include.h
 #include "my_power.h"
 #include "my_extInt.h"
 #include "my_timer.h"

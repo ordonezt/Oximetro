@@ -27,6 +27,9 @@ uint16_t raw[BUFFER_HEIGHT][N_RAW] = {0};
 volatile uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
 volatile uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 
+volatile cuenta_muestras = 0;
+uint8_t pos_peak[2] = {0,0};
+
 bool isFinger(void)
 {
 	/*TODO*/
@@ -93,57 +96,69 @@ void shiftBuffer(volatile uint16_t *buffer, uint8_t length)
 		buffer[i] = buffer[i-1];
 }
 
-void processData(void)
+void process(pulse_t *pulse)
 {
-	static uint8_t Dmax[2], pos_peak[2];
-	static uint8_t Dmin;
+	static new_peak[2]={0,0};
 
-	uint8_t i, new_peak = 0, pos_aux = 0, aux = 0;
+	uint8_t i, pos_aux = 0, aux = 0;
 	uint8_t counter_max, flag_search_max, min, flag_ready;
 
-	pos_peak[led]++;
+	pulse->pos_Dmax++;
 
 	//filter raw signal
-	shiftBuffer(smooth[led], N_SMOOTH);
-	smooth[led][0] = filter(raw[led], h, N_RAW);
+	shiftBuffer(smooth[pulse->Led], N_SMOOTH);
+	smooth[pulse->Led][0] = filter(raw[pulse->Led], h, N_RAW);
 
 	//obtain signal's derivative
-	shiftBuffer(gradient[led], N_GRADIENT);
-	gradient[led][0] = smooth[led][0] - smooth[led][2];//remember the derivative is shifted by 1 sample
+	shiftBuffer(gradient[pulse->Led], N_GRADIENT);
+	gradient[pulse->Led][0] = smooth[pulse->Led][0] - smooth[pulse->Led][2];//remember the derivative is shifted by 1 sample
 
 	//check for derivative peak(rising edge)
 	for(i = 1; i < N_GRADIENT; i++){
-		if(gradient[led][i] > aux)
+		if(gradient[pulse->Led][i] > aux)
 		{
-			aux = gradient[led][i];
+			aux = gradient[pulse->Led][i];
 			pos_aux = i;
 		}
 	}
 
-	if(pos_aux != pos_peak[led]){
+	if(pos_aux != pulse->pos_Dmax){
 		new_peakled = 1;
-		pos_peak[led] = pos_aux;
+		pulse->pos_Dmax = pos_aux;
 	}
-	if(new_peak == 1 && pos_peak >= MAX_WINDOW){ // TODO Pensar, sacar afuera de la
+
+	if (new_peak[RED] == 1 && new_peak[IR] == 1) {
 		flags.beat_detected = true;
-		new_peak = 0;
+		cuenta_muestras++;
+		new_peak[RED] = 0;
+		new_peak[IR] = 0;
 	}
+
+//	if(new_peak == 1 && pos_peak >= MAX_WINDOW){ // TODO Pensar, sacar afuera de la
+//		flags.beat_detected = true;
+//		new_peak = 0;
+//	}
 }
 
-void get_min_max_values(void){
-	int i;
+void get_min_max_values(pulse_t *Data[]){
+	int i, led;
+	uint16_t min, max;
 
-	min = smooth[led][pos_peak];
+	for (led = RED; led <= IR; led++) {
+		min = smooth[led][Data[led]->pos_Dmax];
 
-	for(i = pos_peak; i < (pos_peak + MIN_WINDOW); i++){
-		if(smooth[led][i] < min)
-			min = smooth[led][i];
-	}
+		for(i = Data[led]->pos_Dmax; i < (Data[led]->pos_Dmax + MIN_WINDOW); i++){
+			if(smooth[led][i] < min)
+				min = smooth[led][i];
+		}
 
-	max = smooth[led][pos_peak];
+		max = smooth[led][Data[led]->pos_Dmax];
 
-	for(i = pos_peak; i > (pos_peak - MAX_WINDOW); i--){
-		if(smooth[led][i] > max)
-			max = smooth[led][i];
+		for(i = Data[led]->pos_Dmax; i > (Data[led]->pos_Dmax - MAX_WINDOW); i--){
+			if(smooth[led][i] > max)
+				max = smooth[led][i];
+		}
+		Data[led]->Min = min;
+		Data[led]->Max = max;
 	}
 }

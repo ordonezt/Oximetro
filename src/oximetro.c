@@ -32,6 +32,13 @@ int main(void) {
     statePwr_t power_state = AWAKE;
     stateWork_t work_state = WAITING;
 
+    led_t led = RED;
+    pulse_t Red_p;
+    Red_p.Led = RED;
+    pulse_t Ir_p;
+    Red_p.Led = IR;
+    pulse_t *Data[2] = {&Red_p, &Ir_p};
+
     initSystem();
 
     while(1)
@@ -54,13 +61,21 @@ int main(void) {
     					if(flags.conversion_done)
 						{
 							flags.conversion_done = false;
+							process(Data[led]);
 							led = !led;
-							processData();
 						}
-						if(flags.sample_buffer_full)
+						if(flags.beat_detected)
 						{
-							flags.sample_buffer_full = false;
-	//						display(calculateSpO2(), calculateBPM());
+							if (cuenta_muestras > MAX_WINDOW) {
+								flags.beat_detected = false;
+								cuenta_muestras = 0;
+
+								// obtenemos min y max
+								// obtenemos R
+								// obtenemos
+		//						display(calculateSpO2(), calculateBPM());
+							}
+
 						}
 						if(!flags.is_finger)
 							work_state = WAITING;
