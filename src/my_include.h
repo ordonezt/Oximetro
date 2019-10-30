@@ -39,7 +39,7 @@ typedef struct		//Estructura para manejo de flags del sistema
 	uint16_t adc_time:1;
 	uint16_t is_finger:1;
 	uint16_t conversion_done:1;
-	uint16_t sample_buffer_full:1;
+	uint16_t beat_detected:1;
 	uint16_t no_finger_times:3;
 	uint16_t RESERVED:7;
 }flags_t;
