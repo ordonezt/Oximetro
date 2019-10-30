@@ -6,20 +6,22 @@
  */
 #include "my_include.h"
 
-void initExtInt(void)	//Boton con pull up a masa en PD2
+void initExtInt(void)
 {
-	EICRA &= ~(0x03 << ISC00); 	//Interrupciones por low level
-	EIMSK |= 0x01 << INT0;		//Activo interrupciones
+	//Boton con pull up a masa
+	Chip_IOCON_PinMuxSet(LPC_IOCON, BTN_PORT, BTN_PIN, IOCON_FUNC1 | IOCON_MODE_PULLUP);
+
 }
 
 void delExtInt(void)
 {
-	EIMSK &= ~(0x01 << INT0);		//Desactivo interrupciones
+	//Desactivo interrupciones
 }
 
-ISR(INT0_vect)
+void EINT0_IRQHandler(void)
 {
-	sleep_disable();
+	//Desactivar modo sleep
+	//Borrar flag de EINT0
+	LPC_SYSCTL->EXTINT |= 1 << EINT0; //Por las dudas hacerlo tambien cuando detecto que suelto el dedo
 	delExtInt();
-	PORTC |= 0x01 << PORTC5;
 }

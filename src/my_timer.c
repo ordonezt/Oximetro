@@ -10,14 +10,11 @@
 
 void initTimer(void)
 {
-	 //Interumpe cada 1 ms
-	TCCR0A = 0b00000000; //Funcionamiento normal
-	TCCR0B = 0b00000010; //Funcionamiento normal prescaler 8
-	OCR0A = 125;		 //Cada 1 ms
-	TIMSK0 = 0b00000010; //Interrupcion Compare Match A
+	//Inicializacion del SysTick
+	SysTick_Config(SystemCoreClock / TICKRATE_HZ1); //Comprobar
 }
 
-ISR(TIMER0_COMPA_vect)
+void SysTick_Handler(void)
 {
 	 static uint16_t n = 0;
 
@@ -27,7 +24,7 @@ ISR(TIMER0_COMPA_vect)
 //		 flags.bits.sleep_time = 1;
 
 	 if(n%5 == 0)					//5 ms
-		 ADCSRA |= 1 << ADSC;		//Start conversion
+		 Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);		//Start conversion
 
 	 if(n%40 == 0)
 		 updateDisplay();	//40 ms

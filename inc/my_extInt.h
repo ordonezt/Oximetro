@@ -8,6 +8,8 @@
 #ifndef MY_EXTINT_H_
 #define MY_EXTINT_H_
 
+#define EINT0 	0
+
 void initExtInt(void);
 void delExtInt(void);
 

@@ -8,18 +8,9 @@
 
 void goToSleep(void)
 {
+	/*TODO seccion 4.8 manual lpc*/
 	//Apagar ADC
 	//Poner puertos como entradas pull down
-
-	//Activar sleep
-
-//	SMCR |= 0x01 << SE;	//Activo la instruccion sleep
-//	sei();
-//	__asm__ __volatile__("sleep");
 	initExtInt();
-	PORTC &= ~(0x01 << PORTC5);
-	PORTD &= ~(0x01 << PORTD3);
-	sleep_enable();
-	sei();
-	sleep_cpu();
+	//Activar sleep
 }

@@ -3,6 +3,8 @@
 	<name>Oximetro</name>
 	<comment></comment>
 	<projects>
+		<project>lpc_board_nxp_lpcxpresso_1769</project>
+		<project>lpc_chip_175x_6x</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
@@ -22,6 +24,5 @@
 		<nature>org.eclipse.cdt.core.cnature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
-		<nature>de.innot.avreclipse.core.avrnature</nature>
 	</natures>
 </projectDescription>

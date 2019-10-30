@@ -12,13 +12,19 @@ volatile led_t led = RED;
 
 void initGpio(void)
 {
-	//Salidas
-	DDRD |= 0x01 << DDD3;		//Pin D3 salida
-	DDRC |= 0x01 << DDC5;		//Pin C5 salida
+	Chip_GPIO_Init(LPC_GPIO);
+	Chip_IOCON_Init(LPC_IOCON);
 
-	//Entradas
-	DDRD &= ~(0x01 << DDD2);	//Pin D2 es entrada
-	PORTD |= 0x01 << PORTD2;	//Con pull-up
+	//Salidas
+	//Pin salida para heartbeat P0.22
+	Chip_IOCON_PinMuxSet(LPC_IOCON, HEARTBEAT_PORT, HEARTBEAT_PIN, IOCON_FUNC0);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, HEARTBEAT_PORT, HEARTBEAT_PIN, true);
+
+	//Entradas /*TODO*/
+	Chip_IOCON_PinMuxSet(LPC_IOCON, BTN_PORT, BTN_PIN, IOCON_FUNC0 | IOCON_MODE_PULLUP);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, BTN_PORT, BTN_PIN, false);
+
+
 }
 
 void debounce(void)
@@ -27,7 +33,7 @@ void debounce(void)
 	keyState_t curr;
 	static uint8_t counter_equals = 0;
 
-	curr = ((PIND >> PIND2) & 0x01)? NO_PRESSED : PRESSED;
+	curr = getKey()? NO_PRESSED : PRESSED;
 
 	counter_equals = (prev == curr)? counter_equals + 1 : 0;
 
@@ -54,4 +60,9 @@ void debounce(void)
 void IsFinger(void) {
 	//TODO ENORME: chequear dedo con el led
 	/*Puedo leer digitalmente la salida de la primer etapa, si es HIGH es por que no hay dedo, aunque lo ideal seria leer analogicamente*/
+}
+
+bool getKey(void)
+{
+	return Chip_GPIO_GetPinState(LPC_GPIO, BTN_PORT, BTN_PIN);
 }
