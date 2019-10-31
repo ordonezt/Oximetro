@@ -45,7 +45,8 @@ bool isFinger(void);
 uint8_t calculateSpO2(void);
 uint8_t calculateBPM(void);
 float filter (volatile uint16_t* x,const float* h, uint8_t length);
-void shiftBuffer(volatile uint16_t *buffer, uint8_t length);
-void processData(void);
+void shiftBuffer(volatile uint16_t *buffer, uint16_t length);
+void get_min_max_values(pulse_t *Data[]);
+void process(pulse_t *pulse);
 
 #endif /* MY_DATAMANAGMENT_H_ */

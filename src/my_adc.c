@@ -21,10 +21,13 @@ void initADC(void)
 
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH0, ENABLE);
 	Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH0, ENABLE);
-
 }
 
 void ADC_IRQHandler(void){
+	uint16_t data;
+
+	Chip_ADC_ReadValue(LPC_ADC, ADC_CH0, &data);
+
 	//Solo entro si ya lei el dato anterior
 	if(!flags.conversion_done)
 	{
@@ -33,6 +36,6 @@ void ADC_IRQHandler(void){
 		//get raw signal
 		shiftBuffer(raw[led], N_RAW);
 
-		Chip_ADC_ReadValue(LPC_ADC, ADC_CH0, raw[led]);
+		raw[led][0] = data;
 	}
 }

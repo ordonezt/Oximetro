@@ -8,6 +8,8 @@
 #ifndef MY_POWER_H_
 #define MY_POWER_H_
 
+extern bool Sleeping;
+
 void goToSleep(void);
 
 #endif /* MY_POWER_H_ */

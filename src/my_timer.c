@@ -29,10 +29,11 @@ void SysTick_Handler(void)
 	 if(n%40 == 0)
 		 updateDisplay();	//40 ms
 
-	 if(n == 1000) {
-		if (!isFinger()) {	//1 seg
+	 if(n%1000 == 0){
+		if(!isFinger())	//1 seg
 			flags.no_finger_times++;
-		}
+		else
+			flags.no_finger_times = 0;
 	 }
 
 	 n %= 10000;

@@ -32,8 +32,7 @@ uint8_t pos_peak[2] = {0,0};
 
 bool isFinger(void)
 {
-	/*TODO*/
-	return false;
+	return !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
 }
 
 uint8_t calculateSpO2(void)
@@ -89,9 +88,9 @@ float filter (volatile uint16_t* x,const float* h, uint8_t length)
 	return y;
 }
 
-void shiftBuffer(volatile uint16_t *buffer, uint8_t length)
+void shiftBuffer(volatile uint16_t *buffer, uint16_t length)
 {
-	uint8_t i;
+	uint16_t i;
 	for(i = 1; i < length; i++)
 		buffer[i] = buffer[i-1];
 }
@@ -101,7 +100,6 @@ void process(pulse_t *pulse)
 	static uint8_t new_peak[2]={0,0};
 
 	uint8_t i, pos_aux = 0, aux = 0;
-	uint8_t new_peakled = 0;
 
 	pulse->pos_Dmax++;
 
@@ -123,7 +121,7 @@ void process(pulse_t *pulse)
 	}
 
 	if(pos_aux != pulse->pos_Dmax){
-		new_peakled = 1;
+		new_peak[pulse->Led] = 1;
 		pulse->pos_Dmax = pos_aux;
 	}
 

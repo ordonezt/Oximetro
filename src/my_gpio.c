@@ -16,13 +16,21 @@ void initGpio(void)
 	Chip_IOCON_Init(LPC_IOCON);
 
 	//Salidas
-	//Pin salida para heartbeat P0.22
-	Chip_IOCON_PinMuxSet(LPC_IOCON, HEARTBEAT_PORT, HEARTBEAT_PIN, IOCON_FUNC0);
-	Chip_GPIO_WriteDirBit(LPC_GPIO, HEARTBEAT_PORT, HEARTBEAT_PIN, true);
+	//Pin salida para estado P0.22
+	Chip_IOCON_PinMuxSet(LPC_IOCON, STATE_PORT, STATE_PIN, IOCON_FUNC0);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, STATE_PORT, STATE_PIN, true);
 
-	//Entradas /*TODO*/
+	//Entradas
 	Chip_IOCON_PinMuxSet(LPC_IOCON, BTN_PORT, BTN_PIN, IOCON_FUNC0 | IOCON_MODE_PULLUP);
 	Chip_GPIO_WriteDirBit(LPC_GPIO, BTN_PORT, BTN_PIN, false);
+
+	Chip_IOCON_PinMuxSet(LPC_IOCON, DC_LEVEL_PORT, DC_LEVEL_PIN, IOCON_FUNC0 | IOCON_MODE_PULLUP);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN, false);
+}
+
+void setLedState(bool state)
+{
+	Chip_GPIO_SetPinState(LPC_GPIO, STATE_PORT, STATE_PIN, !state); //Led activo bajo
 }
 
 void debounce(void)
@@ -53,11 +61,6 @@ void debounce(void)
 	}
 
 	prev = curr;
-}
-
-void IsFinger(void) {
-	//TODO ENORME: chequear dedo con el led
-	/*Puedo leer digitalmente la salida de la primer etapa, si es HIGH es por que no hay dedo, aunque lo ideal seria leer analogicamente*/
 }
 
 bool getKey(void)

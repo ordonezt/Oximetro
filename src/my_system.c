@@ -15,4 +15,5 @@ void initSystem(void)
 	initADC();		//Inicializo el ADC
 	initPWM();		//Inicializo el PWM
 //	set_sleep_mode(SLEEP_MODE_PWR_DOWN);//Selecciono power-down mode
+	setLedState(AWAKE);
 }

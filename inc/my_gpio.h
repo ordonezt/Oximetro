@@ -8,19 +8,21 @@
 #ifndef MY_GPIO_H_
 #define MY_GPIO_H_
 
-#include <stdbool.h>
-
 #define N_TIMES	6
 
-#define HEARTBEAT_PORT		0
-#define HEARTBEAT_PIN		22
+#define STATE_PORT		0
+#define STATE_PIN		22
 
-#define BTN_PORT		2
-#define BTN_PIN			10
+#define BTN_PORT			2
+#define BTN_PIN				10
+
+#define DC_LEVEL_PORT		2
+#define DC_LEVEL_PIN		2
 
 void initGpio(void);
 void debounce(void);
 bool getKey(void);
+void setLedState(bool state);
 
 typedef enum{NO_PRESSED, PRESSED}keyState_t;
 

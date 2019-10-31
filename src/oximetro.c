@@ -16,7 +16,6 @@
  * 		-Pantalla o displays
  * 		-PROBARLO
  */
-#include <cr_section_macros.h>
 
 #include "my_include.h"
 
@@ -53,14 +52,14 @@ int main(void) {
     				case WAITING:
     					led = IR;
     //					display(NA, NA);	/*TODO*/
-    					if(flags.is_finger)
+    					if(isFinger())
     						work_state = WORKING;
     					break;
     				case WORKING:
     					if(flags.conversion_done)
 						{
 							flags.conversion_done = false;
-							process(Data[led]);
+//							process(Data[led]);
 							led = !led;
 						}
 						if(flags.beat_detected)
@@ -76,7 +75,7 @@ int main(void) {
 							}
 
 						}
-						if(!flags.is_finger)
+						if(!isFinger())
 							work_state = WAITING;
 						break;
     				default:
@@ -87,18 +86,23 @@ int main(void) {
     				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
     				{
     					button.wasRelease = false;
+    					flags.no_finger_times = 0;
     					power_state = SLEEP;
+    					setLedState(SLEEP);
     				}
     				break;
 
     			case SLEEP:
     				goToSleep();
     				//Si llegue aca es por que desperte, voy a estado normal
-    				if(button.wasRelease == true) //Espero a que suelte el boton aca, por que si no vuelvo a dormir
-    				{
-    					button.wasRelease = false;
-    					power_state = AWAKE;
-    					work_state = WAITING;
+    				while(power_state == SLEEP){
+    					//Espero a que suelte el boton aca, por que si no vuelvo a dormir
+						if(button.wasRelease == true){
+							button.wasRelease = false;
+							power_state = AWAKE;
+							work_state = WAITING;
+							setLedState(AWAKE);
+						}
     				}
     				break;
 

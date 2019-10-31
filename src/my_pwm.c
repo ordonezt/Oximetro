@@ -18,10 +18,10 @@ void initPWM(void)
 		Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_PWM1);
 
 	//Establezco el prescaler del perisferico
-	Chip_Clock_SetPCLKDiv(SYSCTL_CLOCK_PWM1,SYSCTL_CLKDIV_4); // (100MHz / 4) = 25MHz
+	Chip_Clock_SetPCLKDiv(SYSCTL_CLOCK_PWM1,SYSCTL_CLKDIV_4);
 
 	//Prescaler del PWM
-	Chip_PWM_SetPrescale(25);	// (25MHz / 25) = 1MHz
+	Chip_PWM_SetPrescale(25);
 
 	//Establezco el modo PWM
 	Chip_PWM_CountMode(PWM_TIMER, 0);
