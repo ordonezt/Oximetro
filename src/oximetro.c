@@ -70,7 +70,8 @@ int main(void) {
 
 								// obtenemos min y max
 								// obtenemos R
-								// obtenemos
+								// obtenemos Pulsos
+
 		//						display(calculateSpO2(), calculateBPM());
 							}
 

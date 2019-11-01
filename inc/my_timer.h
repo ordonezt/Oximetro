@@ -9,6 +9,7 @@
 #define MY_TIMER_H_
 
 #define TICKRATE_HZ1 	1000 //1000 Hz => 1ms
+#define SAMPLE_PERIOD 	4 //2ms
 
 void initTimer(void);
 

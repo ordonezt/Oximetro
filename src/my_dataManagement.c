@@ -11,20 +11,25 @@
 #define PROM_SPO2 1
 #define PROM PROM_SPO2
 
-const float h[N_RAW] = {
-		0.001456221097893,
-		0.002411708629448,
-		0.002910975063111,
-		0.002411708629448,
-		0.001456221097893,
+float freq = 0;
+
+const float h[N_RAW] =
+{
+		0.038626528332096295,
+		0.14300345854663776,
+		0.233752240231106,
+		0.28624515754407337,
+		0.233752240231106,
+		0.14300345854663776,
+		0.038626528332096295,
 };
 
 const uint8_t A = 110;
 const uint8_t B = 25;
 
-uint16_t raw[BUFFER_HEIGHT][N_RAW] = {0};
-uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
-uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
+float raw[BUFFER_HEIGHT][N_RAW] = {0};
+float smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
+float gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 
 volatile uint8_t cuenta_muestras = 0;
 uint8_t pos_peak[2] = {0,0};
@@ -76,18 +81,18 @@ uint8_t calculateBPM(void)
 	return 0;
 }
 
-float filter (volatile uint16_t* x,const float* h, uint8_t length)
+float filter (volatile float* x,const float* h, uint8_t length)
 {
 	uint8_t n = 0;
 	float y = 0;
 
 	for(n = 0; n < length; n++)
-		y += (float)x[n] * h[n];
+		y += ((float)x[n]) * h[n];
 
 	return y;
 }
 
-void shiftBuffer(uint16_t *buffer, uint16_t length)
+void shiftBuffer(float *buffer, uint16_t length)
 {
 	uint16_t i;
 	for(i = length-1; i > 0; i--)
@@ -98,7 +103,9 @@ void process(pulse_t *pulse)
 {
 	static uint8_t new_peak[2]={0,0};
 
-	uint8_t i, pos_aux = 0, aux = 0;
+	uint8_t i, pos_aux = 0;
+
+	float aux = 0;
 
 	pulse->pos_Dmax++;
 
@@ -111,7 +118,7 @@ void process(pulse_t *pulse)
 	gradient[pulse->Led][0] = smooth[pulse->Led][0] - smooth[pulse->Led][2];//remember the derivative is shifted by 1 sample
 
 	//check for derivative peak(rising edge)
-	for(i = 1; i < N_GRADIENT; i++){
+	for(i = 1, aux = gradient[pulse->Led][0]; i < N_GRADIENT; i++){
 		if(gradient[pulse->Led][i] > aux)
 		{
 			aux = gradient[pulse->Led][i];
@@ -121,15 +128,21 @@ void process(pulse_t *pulse)
 
 	if(pos_aux != pulse->pos_Dmax){
 		new_peak[pulse->Led] = 1;
+		freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
 		pulse->pos_Dmax = pos_aux;
 	}
 
 	if (new_peak[RED] == 1 && new_peak[IR] == 1) {
 		flags.beat_detected = true;
-		cuenta_muestras++;
 		new_peak[RED] = 0;
 		new_peak[IR] = 0;
+		cuenta_muestras = 0;
+		Chip_GPIO_SetPinToggle(LPC_GPIO, STATE_PORT, STATE_PIN);
 	}
+//	if (flag.beat_detected){
+//		cuenta_muestras++;
+//	}
+
 
 //	if(new_peak == 1 && pos_peak >= MAX_WINDOW){ // TODO Pensar, sacar afuera de la
 //		flags.beat_detected = true;

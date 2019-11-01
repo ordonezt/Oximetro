@@ -13,8 +13,8 @@
 #define BUFFER_LENGTH 	400	//2 seg de span
 							//Tamaño del buffer 2*400*2B = 1,6 KB
 
-#define N_RAW	5
-#define N_GRADIENT 3
+#define N_RAW	7
+#define N_GRADIENT 250
 #define N_SMOOTH BUFFER_LENGTH
 
 #define MAX_WINDOW 10
@@ -34,9 +34,9 @@ extern const uint8_t A;
 extern const uint8_t B;
 extern volatile uint8_t cuenta_muestras;
 
-extern uint16_t raw[BUFFER_HEIGHT][N_RAW];
-extern uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH];
-extern uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT];
+extern float raw[BUFFER_HEIGHT][N_RAW];
+extern float smooth[BUFFER_HEIGHT][BUFFER_LENGTH];
+extern float gradient[BUFFER_HEIGHT][N_GRADIENT];
 
 
 
@@ -44,8 +44,8 @@ extern uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT];
 bool isFinger(void);
 uint8_t calculateSpO2(void);
 uint8_t calculateBPM(void);
-float filter (volatile uint16_t* x,const float* h, uint8_t length);
-void shiftBuffer(uint16_t *buffer, uint16_t length);
+float filter (volatile float* x,const float* h, uint8_t length);
+void shiftBuffer(float *buffer, uint16_t length);
 void get_min_max_values(pulse_t *Data[]);
 void process(pulse_t *pulse);
 
