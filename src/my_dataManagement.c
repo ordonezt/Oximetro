@@ -90,7 +90,7 @@ float filter (volatile uint16_t* x,const float* h, uint8_t length)
 void shiftBuffer(uint16_t *buffer, uint16_t length)
 {
 	uint16_t i;
-	for(i = 1; i < length; i++)
+	for(i = length-1; i > 0; i--)
 		buffer[i] = buffer[i-1];
 }
 
@@ -103,7 +103,7 @@ void process(pulse_t *pulse)
 	pulse->pos_Dmax++;
 
 	//filter raw signal
-	shiftBuffer(smooth[pulse->Led], 3);
+	shiftBuffer(smooth[pulse->Led], N_SMOOTH);
 	smooth[pulse->Led][0] = filter(raw[pulse->Led], h, N_RAW);
 
 	//obtain signal's derivative
@@ -138,20 +138,23 @@ void process(pulse_t *pulse)
 }
 
 void get_min_max_values(pulse_t *Data[]){
-	int i, led_local;
-	uint16_t min, max;
+	led_t led_local;
+	uint16_t i, min, max, pos_Dmax;
 
 	for (led_local = RED; led_local <= IR; led_local++) {
-		min = smooth[led_local][Data[led_local]->pos_Dmax];
 
-		for(i = Data[led_local]->pos_Dmax; i < (Data[led_local]->pos_Dmax + MIN_WINDOW); i++){
+		pos_Dmax = Data[led_local]->pos_Dmax;
+
+		min = smooth[led_local][pos_Dmax];
+
+		for(i = pos_Dmax; i < (pos_Dmax + MIN_WINDOW); i++){
 			if(smooth[led_local][i] < min)
 				min = smooth[led_local][i];
 		}
 
-		max = smooth[led_local][Data[led_local]->pos_Dmax];
+		max = smooth[led_local][pos_Dmax];
 
-		for(i = Data[led_local]->pos_Dmax; i > (Data[led_local]->pos_Dmax - MAX_WINDOW); i--){
+		for(i = pos_Dmax; i > (pos_Dmax - MAX_WINDOW); i--){
 			if(smooth[led_local][i] > max)
 				max = smooth[led_local][i];
 		}
