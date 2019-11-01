@@ -23,9 +23,8 @@ const uint8_t A = 110;
 const uint8_t B = 25;
 
 uint16_t raw[BUFFER_HEIGHT][N_RAW] = {0};
-
-volatile uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
-volatile uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
+uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
+uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 
 volatile uint8_t cuenta_muestras = 0;
 uint8_t pos_peak[2] = {0,0};
@@ -88,7 +87,7 @@ float filter (volatile uint16_t* x,const float* h, uint8_t length)
 	return y;
 }
 
-void shiftBuffer(volatile uint16_t *buffer, uint16_t length)
+void shiftBuffer(uint16_t *buffer, uint16_t length)
 {
 	uint16_t i;
 	for(i = 1; i < length; i++)
@@ -104,7 +103,7 @@ void process(pulse_t *pulse)
 	pulse->pos_Dmax++;
 
 	//filter raw signal
-	shiftBuffer(smooth[pulse->Led], N_SMOOTH);
+	shiftBuffer(smooth[pulse->Led], 3);
 	smooth[pulse->Led][0] = filter(raw[pulse->Led], h, N_RAW);
 
 	//obtain signal's derivative

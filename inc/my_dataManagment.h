@@ -22,7 +22,7 @@
 //-----------------------------------TIPOS DE DATOS-----------------------------
 
 typedef struct {
-	uint8_t Led;
+	uint16_t Led;
 	uint16_t Max;
 	uint16_t Min;
 	uint8_t pos_Dmax;
@@ -35,8 +35,8 @@ extern const uint8_t B;
 extern volatile uint8_t cuenta_muestras;
 
 extern uint16_t raw[BUFFER_HEIGHT][N_RAW];
-extern volatile uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH];
-extern volatile uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT];
+extern uint16_t smooth[BUFFER_HEIGHT][BUFFER_LENGTH];
+extern uint16_t gradient[BUFFER_HEIGHT][N_GRADIENT];
 
 
 
@@ -45,7 +45,7 @@ bool isFinger(void);
 uint8_t calculateSpO2(void);
 uint8_t calculateBPM(void);
 float filter (volatile uint16_t* x,const float* h, uint8_t length);
-void shiftBuffer(volatile uint16_t *buffer, uint16_t length);
+void shiftBuffer(uint16_t *buffer, uint16_t length);
 void get_min_max_values(pulse_t *Data[]);
 void process(pulse_t *pulse);
 

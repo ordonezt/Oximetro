@@ -34,7 +34,7 @@ int main(void) {
     pulse_t Red_p;
     Red_p.Led = RED;
     pulse_t Ir_p;
-    Red_p.Led = IR;
+    Ir_p.Led = IR;
     pulse_t *Data[2] = {&Red_p, &Ir_p};
 
     initSystem();
@@ -59,7 +59,7 @@ int main(void) {
     					if(flags.conversion_done)
 						{
 							flags.conversion_done = false;
-//							process(Data[led]);
+							process(Data[led]);
 							led = !led;
 						}
 						if(flags.beat_detected)
