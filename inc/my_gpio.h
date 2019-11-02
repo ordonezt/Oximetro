@@ -13,6 +13,9 @@
 #define STATE_PORT		0
 #define STATE_PIN		22
 
+#define HEARTBEAT_PORT		3
+#define HEARTBEAT_PIN		25
+
 #define BTN_PORT			2
 #define BTN_PIN				10
 

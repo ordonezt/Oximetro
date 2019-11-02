@@ -137,7 +137,7 @@ void process(pulse_t *pulse)
 		new_peak[RED] = 0;
 		new_peak[IR] = 0;
 		cuenta_muestras = 0;
-		Chip_GPIO_SetPinToggle(LPC_GPIO, STATE_PORT, STATE_PIN);
+		Chip_GPIO_SetPinToggle(LPC_GPIO, HEARTBEAT_PORT, HEARTBEAT_PIN);
 	}
 //	if (flag.beat_detected){
 //		cuenta_muestras++;

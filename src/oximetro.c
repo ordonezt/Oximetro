@@ -103,6 +103,7 @@ int main(void) {
 							power_state = AWAKE;
 							work_state = WAITING;
 							setLedState(AWAKE);
+							restoreSystem();
 						}
     				}
     				break;

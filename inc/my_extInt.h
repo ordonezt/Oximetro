@@ -11,6 +11,5 @@
 #define EINT0 	0
 
 void initExtInt(void);
-void delExtInt(void);
 
 #endif /* MY_EXTINT_H_ */
