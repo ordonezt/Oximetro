@@ -12,6 +12,7 @@
 #define PROM PROM_R
 
 float freq = 0;
+float bpm = 0;
 uint32_t deltaN=0;
 
 extern RINGBUFF_T txring;
@@ -123,9 +124,10 @@ void process(pulse_t *pulse)
 	static uint8_t new_peak[2]={0,0};
 
 	uint8_t i, pos_aux = 0;
-	uint8_t n = '\n';
+	//uint8_t n = '\n';
 
-	float aux = 0, bpm = 0;
+	float aux = 0;
+	char n = '1';
 
 	//filter raw signal
 	shiftBuffer(smooth[pulse->Led], N_SMOOTH);
@@ -150,8 +152,8 @@ void process(pulse_t *pulse)
 		//freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
 		deltaN=pulse->pos_Dmax-pos_aux;
 		bpm = 60000 / (deltaN * SAMPLE_PERIOD);
-		RingBuffer_Insert(&txring, (uint8_t*) &bpm);
-		RingBuffer_Insert(&txring, &n);
+		//RingBuffer_Insert(&txring, &n);
+		//RingBuffer_Insert(&txring, &n);
 		pulse->pos_Dmax = pos_aux;
 	}
 
