@@ -9,37 +9,45 @@
 
 void initPWM(void)
 {
-	//Configuro pines como PWM
-	Chip_IOCON_PinMuxSet(LPC_IOCON, RED_PORT, RED_PIN, IOCON_FUNC1);
-	Chip_IOCON_PinMuxSet(LPC_IOCON, IR_PORT, IR_PIN, IOCON_FUNC1);
 
-	//Habilito el clock del perisferico
-	if(!Chip_Clock_IsPeripheralClockEnabled(SYSCTL_CLOCK_PWM1))
-		Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_PWM1);
+	//Configuro pines como gpio
+	Chip_GPIO_WriteDirBit(LPC_GPIO, RED_PORT, RED_PIN, true);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, IR_PORT, IR_PIN, true);
 
-	//Establezco el prescaler del perisferico
-	Chip_Clock_SetPCLKDiv(SYSCTL_CLOCK_PWM1,SYSCTL_CLKDIV_4);
+	Chip_IOCON_PinMuxSet(LPC_IOCON, RED_PORT, RED_PIN, IOCON_FUNC0);
+	Chip_IOCON_PinMuxSet(LPC_IOCON, IR_PORT, IR_PIN, IOCON_FUNC0);
 
-	//Prescaler del PWM
-	Chip_PWM_SetPrescale(25);
-
-	//Establezco el modo PWM
-	Chip_PWM_CountMode(PWM_TIMER, 0);
-
-	//El match 0 resetea la cuenta
-	Chip_PWM_SetMatchControl(MATCH0, M_RESET);
-
-	//Defino la frecuencia de salida del PWM
-	PWM_SetFreq(PWM_FREQ);
-
-	//Habilito las salidas
-	Chip_PWM_OutputEnable(RED_PWM, ENABLE);
-	Chip_PWM_OutputEnable(IR_PWM, ENABLE);
-
-	PWM_SetDuty(RED_PWM, RED_DUTY);
-	PWM_SetDuty(IR_PWM, IR_DUTY);
-
-	PWM_TurnOn();
+//	//Configuro pines como PWM
+//	Chip_IOCON_PinMuxSet(LPC_IOCON, RED_PORT, RED_PIN, IOCON_FUNC1);
+//	Chip_IOCON_PinMuxSet(LPC_IOCON, IR_PORT, IR_PIN, IOCON_FUNC1);
+//
+//	//Habilito el clock del perisferico
+//	if(!Chip_Clock_IsPeripheralClockEnabled(SYSCTL_CLOCK_PWM1))
+//		Chip_Clock_EnablePeriphClock(SYSCTL_CLOCK_PWM1);
+//
+//	//Establezco el prescaler del perisferico
+//	Chip_Clock_SetPCLKDiv(SYSCTL_CLOCK_PWM1,SYSCTL_CLKDIV_4);
+//
+//	//Prescaler del PWM
+//	Chip_PWM_SetPrescale(25);
+//
+//	//Establezco el modo PWM
+//	Chip_PWM_CountMode(PWM_TIMER, 0);
+//
+//	//El match 0 resetea la cuenta
+//	Chip_PWM_SetMatchControl(MATCH0, M_RESET);
+//
+//	//Defino la frecuencia de salida del PWM
+//	PWM_SetFreq(PWM_FREQ);
+//
+//	//Habilito las salidas
+//	Chip_PWM_OutputEnable(RED_PWM, ENABLE);
+//	Chip_PWM_OutputEnable(IR_PWM, ENABLE);
+//
+//	PWM_SetDuty(RED_PWM, RED_DUTY);
+//	PWM_SetDuty(IR_PWM, IR_DUTY);
+//
+//	PWM_TurnOn();
 }
 
 void Chip_PWM_SetPrescale(uint32_t pr)
@@ -200,4 +208,31 @@ void PWM_TurnOn(void)
 
 	//Habilito el PWM
 	Chip_PWM_Enable(ENABLE);
+}
+
+void setLed(led_t led)
+{
+//	if(led == IR)
+//	{
+//		Chip_PWM_OutputEnable(IR_PWM, ENABLE);
+//		Chip_PWM_OutputEnable(RED_PWM, DISABLE);
+//	}
+//
+//	else
+//	{
+//		Chip_PWM_OutputEnable(IR_PWM, DISABLE);
+//		Chip_PWM_OutputEnable(RED_PWM, ENABLE);
+//	}
+//
+	if(led == IR)
+	{
+		Chip_GPIO_SetPinState(LPC_GPIO, IR_PORT, IR_PIN, true);
+		Chip_GPIO_SetPinState(LPC_GPIO, RED_PORT, RED_PIN, false);
+	}
+
+	else
+	{
+		Chip_GPIO_SetPinState(LPC_GPIO, IR_PORT, IR_PIN, false);
+		Chip_GPIO_SetPinState(LPC_GPIO, RED_PORT, RED_PIN, true);
+	}
 }

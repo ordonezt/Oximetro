@@ -9,6 +9,7 @@
 #define MY_INCLUDE_H_
 
 #include "math.h"
+#include <stdio.h>
 #include "board.h"
 #include "my_power.h"
 #include "my_extInt.h"
