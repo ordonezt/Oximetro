@@ -29,7 +29,7 @@
 
 #define MAX_DUTY 	1
 
-#define PWM_FREQ	10000		//10KHz
+#define PWM_FREQ	100000		//100KHz
 
 typedef enum{M_INTERRUP = 0b001, M_RESET = 0b010, M_STOP = 0b100} match_action;
 
@@ -187,5 +187,6 @@ float PWM_GetDuty(uint8_t output);
 
 void initPWM(void);
 
+void setLed(led_t led);
 
 #endif /* MY_PWM_H_ */

@@ -17,14 +17,20 @@
 #define N_GRADIENT 250
 #define N_SMOOTH BUFFER_LENGTH
 
+#define N_FINGER	10
+#define THRESHOLD	100		//TODO
+#define DC_LEVEL	500		//TODO
+
 #define MAX_WINDOW 10
 #define MIN_WINDOW 10
+
+#define N_PROM 	10
 //-----------------------------------TIPOS DE DATOS-----------------------------
 
 typedef struct {
 	uint16_t Led;
-	uint16_t Max;
-	uint16_t Min;
+	float Max[N_PROM];
+	float Min[N_PROM];
 	uint8_t pos_Dmax;
 } pulse_t;
 
@@ -41,8 +47,8 @@ extern float gradient[BUFFER_HEIGHT][N_GRADIENT];
 
 
 //-----------------------------------PROTOTIPOS----------------------------------
-bool isFinger(void);
-uint8_t calculateSpO2(void);
+void checkFinger(void);
+uint8_t calculateSpO2(pulse_t *Data[]);
 uint8_t calculateBPM(void);
 float filter (volatile float* x,const float* h, uint8_t length);
 void shiftBuffer(float *buffer, uint16_t length);

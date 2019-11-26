@@ -8,7 +8,7 @@
 #ifndef MY_INCLUDE_H_
 #define MY_INCLUDE_H_
 
-
+#include <stdio.h>
 #include "board.h"
 #include "my_power.h"
 #include "my_extInt.h"

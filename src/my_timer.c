@@ -19,9 +19,7 @@ void SysTick_Handler(void)
 	 static uint16_t n = 0;
 
 	 debounce();					//1 ms
-
-//	 if(n == 10000)					//20 seg
-//		 flags.bits.sleep_time = 1;
+	 checkFinger();
 
 	 if(n%(SAMPLE_PERIOD/2) == 0)					//5 ms
 		 Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);		//Start conversion
@@ -30,7 +28,7 @@ void SysTick_Handler(void)
 		 updateDisplay();	//40 ms
 
 	 if(n%1000 == 0){
-		if(!isFinger())	//1 seg
+		if(!flags.is_finger)	//1 seg
 			flags.no_finger_times++;
 		else
 			flags.no_finger_times = 0;

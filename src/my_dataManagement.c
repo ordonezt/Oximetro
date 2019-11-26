@@ -9,9 +9,10 @@
 
 #define PROM_R 0
 #define PROM_SPO2 1
-#define PROM PROM_SPO2
+#define PROM PROM_R
 
 float freq = 0;
+uint32_t deltaN=0;
 
 const float h[N_RAW] =
 {
@@ -34,51 +35,63 @@ float gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 volatile uint8_t cuenta_muestras = 0;
 uint8_t pos_peak[2] = {0,0};
 
-bool isFinger(void)
+void checkFinger(void)
 {
-	return !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
+//	uint8_t i;
+//	float aux = 0;
+//
+//	for(i = 0; i < N_FINGER; i++)
+//		aux += abs(smooth[IR][i] - DC_LEVEL);
+//
+//	aux /= N_FINGER;
+//
+//	if(aux > THRESHOLD)
+//		flags.is_finger = true;
+//	else
+//		flags.is_finger = false;
+
+	flags.is_finger = !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
+
 }
 
-uint8_t calculateSpO2(void)
+uint8_t calculateSpO2(pulse_t *Data[])
 {
-	return 0;
-//	uint8_t i = 0;
-//
-//#if(PROM == PROM_R)
-//
-//	float R = 0;
-//	uint8_t SpO2 = 0;
-//
-//	for(i = 0; i < SAMPLES_LENGTH; i++)
-//		R += log10(MAX[RED][i] / MIN[RED][i]) / log10(MAX[IR][i] / MIN[IR][i]);
-//
-//	R = (R / SAMPLES_LENGTH);
-//
-//	SpO2 = A - (B * R);
-//
-//#endif
-//
-//#if(PROM == PROM_SPO2)
-//
-//	float R = 0;
-//	uint16_t SpO2 = 0;
-//
-//		for(i = 0; i < SAMPLES_LENGTH; i++)
-//	{
-//		R = log10(MAX[RED][i] / MIN[RED][i]) / log10(MAX[IR][i] / MIN[IR][i]);
-//		SpO2 += A - (B * R);
-//	}
-//
-//	SpO2 /= SAMPLES_LENGTH;
-//#endif
-//
-//	return SpO2;
+	uint8_t i = 0;
+
+#if(PROM == PROM_R)
+
+	float R = 0;
+	uint8_t SpO2 = 0;
+
+	for(i = 0; i < N_PROM; i++)
+		R += log10(Data[RED]->Max[i] / Data[RED]->Min[i]) / log10(Data[IR]->Max[i] / Data[IR]->Min[i]);
+
+	R = (R / N_PROM);
+
+	SpO2 = A - (B * R);
+
+#endif
+
+#if(PROM == PROM_SPO2)
+
+	float R = 0;
+	uint16_t SpO2 = 0;
+
+		for(i = 0; i < SAMPLES_LENGTH; i++)
+	{
+		R = log10(MAX[RED][i] / MIN[RED][i]) / log10(MAX[IR][i] / MIN[IR][i]);
+		SpO2 += A - (B * R);
+	}
+
+	SpO2 /= SAMPLES_LENGTH;
+#endif
+
+	return SpO2;
 }
 
 uint8_t calculateBPM(void)
 {
-	/*TODO*/
-	return 0;
+	return 60000 / (deltaN * SAMPLE_PERIOD);
 }
 
 float filter (volatile float* x,const float* h, uint8_t length)
@@ -105,7 +118,7 @@ void process(pulse_t *pulse)
 
 	uint8_t i, pos_aux = 0;
 
-	float aux = 0;
+	float aux = 0, bpm = 0;
 
 	pulse->pos_Dmax++;
 
@@ -128,7 +141,9 @@ void process(pulse_t *pulse)
 
 	if(pos_aux != pulse->pos_Dmax){
 		new_peak[pulse->Led] = 1;
-		freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
+		//freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
+		deltaN=pulse->pos_Dmax-pos_aux;
+		bpm = 60000 / (deltaN * SAMPLE_PERIOD);
 		pulse->pos_Dmax = pos_aux;
 	}
 
@@ -171,7 +186,11 @@ void get_min_max_values(pulse_t *Data[]){
 			if(smooth[led_local][i] > max)
 				max = smooth[led_local][i];
 		}
-		Data[led_local]->Min = min;
-		Data[led_local]->Max = max;
+
+		shiftBuffer(Data[led_local]->Max, N_PROM);
+		shiftBuffer(Data[led_local]->Min, N_PROM);
+
+		Data[led_local]->Min[0] = min;
+		Data[led_local]->Max[0] = max;
 	}
 }
