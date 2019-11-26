@@ -52,8 +52,12 @@ void checkFinger(void)
 //	else
 //		flags.is_finger = false;
 
-	flags.is_finger = !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
 
+
+//	flags.is_finger = !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
+
+
+	flags.is_finger = true;
 }
 
 uint8_t calculateSpO2(pulse_t *Data[])
@@ -119,6 +123,7 @@ void process(pulse_t *pulse)
 	static uint8_t new_peak[2]={0,0};
 
 	uint8_t i, pos_aux = 0;
+	uint8_t n = '\n';
 
 	float aux = 0, bpm = 0;
 
@@ -145,17 +150,18 @@ void process(pulse_t *pulse)
 		//freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
 		deltaN=pulse->pos_Dmax-pos_aux;
 		bpm = 60000 / (deltaN * SAMPLE_PERIOD);
-    RingBuffer_Insert(&txring, (uint8_t*) &bpm);
+		RingBuffer_Insert(&txring, (uint8_t*) &bpm);
+		RingBuffer_Insert(&txring, &n);
 		pulse->pos_Dmax = pos_aux;
 	}
 
-//	if (new_peak[RED] == 1 && new_peak[IR] == 1) {
-//		flags.beat_detected = true;
-//		new_peak[RED] = 0;
-//		new_peak[IR] = 0;
-//		cuenta_muestras = 0;
-//		Chip_GPIO_SetPinToggle(LPC_GPIO, STATE_PORT, STATE_PIN);
-//	}
+	if (new_peak[RED] == 1 && new_peak[IR] == 1) {
+		flags.beat_detected = true;
+		new_peak[RED] = 0;
+		new_peak[IR] = 0;
+		cuenta_muestras = 0;
+		Chip_GPIO_SetPinToggle(LPC_GPIO, STATE_PORT, STATE_PIN);
+	}
 //	if (flags.beat_detected){
 //		cuenta_muestras++;
 //	}
@@ -167,17 +173,6 @@ void process(pulse_t *pulse)
 //	}
 
 	pulse->pos_Dmax++;
-
-//		for(i = pos_Dmax; i > (pos_Dmax - MAX_WINDOW); i--){
-//			if(smooth[led_local][i] > max)
-//				max = smooth[led_local][i];
-//		}
-
-//		shiftBuffer(Data[led_local]->Max, N_PROM);
-//		shiftBuffer(Data[led_local]->Min, N_PROM);
-
-//		Data[led_local]->Min[0] = min;
-//		Data[led_local]->Max[0] = max;
 }
 
 void get_min_max_values(pulse_t *Data[]){
