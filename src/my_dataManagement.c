@@ -180,31 +180,35 @@ void process(pulse_t *pulse)
 //		Data[led_local]->Max[0] = max;
 }
 
-//void get_min_max_values(pulse_t *Data[2]){
-//	led_t led_local;
-//	uint16_t i, min, max, pos_Dmax;
-//
-//	for (led_local = RED; led_local <= IR; led_local++) {
-//
-//		pos_Dmax = Data[led_local]->pos_Dmax;
-//
-//		min = smooth[led_local][pos_Dmax];
-//
-//		for(i = pos_Dmax; i < (pos_Dmax + MIN_WINDOW); i++){
-//			if(smooth[led_local][i] < min)
-//				min = smooth[led_local][i];
-//		}
-//
-//		max = smooth[led_local][pos_Dmax];
-//
-//		for(i = pos_Dmax; i > (pos_Dmax - MAX_WINDOW) && i > 0; i--){
-//			if(smooth[led_local][i] > max)
-//				max = smooth[led_local][i];
-//		}
-//		Data[led_local]->Min = min;
-//		Data[led_local]->Max = max;
-//	}
-//}
+void get_min_max_values(pulse_t *Data[]){
+	led_t led_local;
+	uint16_t i, min, max, pos_Dmax;
+
+	for (led_local = RED; led_local <= IR; led_local++) {
+
+		pos_Dmax = Data[led_local]->pos_Dmax;
+
+		min = smooth[led_local][pos_Dmax];
+
+		for(i = pos_Dmax; i < (pos_Dmax + MIN_WINDOW); i++){
+			if(smooth[led_local][i] < min)
+				min = smooth[led_local][i];
+		}
+
+		max = smooth[led_local][pos_Dmax];
+
+		for(i = pos_Dmax; i > (pos_Dmax - MAX_WINDOW) && i > 0; i--){
+			if(smooth[led_local][i] > max)
+				max = smooth[led_local][i];
+		}
+
+		shiftBuffer(Data[led_local]->Max, N_PROM);
+		shiftBuffer(Data[led_local]->Min, N_PROM);
+
+		Data[led_local]->Min[0] = min;
+		Data[led_local]->Max[0] = max;
+	}
+}
 //
 //float get_R_value(pulse_t *Data[2]){
 //
