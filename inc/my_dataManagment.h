@@ -21,10 +21,11 @@
 #define THRESHOLD	100		//TODO
 #define DC_LEVEL	500		//TODO
 
-#define MAX_WINDOW 10
-#define MIN_WINDOW 10
+#define MAX_WINDOW 10   // TODO ALCANZA???
+#define MIN_WINDOW 10   //
 
 #define N_PROM 	10
+
 //-----------------------------------TIPOS DE DATOS-----------------------------
 
 typedef struct {

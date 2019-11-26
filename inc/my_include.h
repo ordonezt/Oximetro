@@ -8,6 +8,7 @@
 #ifndef MY_INCLUDE_H_
 #define MY_INCLUDE_H_
 
+#include "math.h"
 #include <stdio.h>
 #include "board.h"
 #include "my_power.h"
@@ -22,6 +23,7 @@
 #include "my_watchdog.h"
 #include "my_system.h"
 #include "my_twi.h"
+#include "my_uart.h"
 
 #define MAX_NO_FINGER_TIME 7
 

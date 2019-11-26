@@ -72,8 +72,7 @@ int main(void) {
 									get_min_max_values(Data);
 									// obtenemos R
 									// obtenemos Pulsos
-
-			//						display(calculateSpO2(Data), calculateBPM());
+			            //display(calculateSpO2(Data), calculateBPM());
 								}
 
 							}

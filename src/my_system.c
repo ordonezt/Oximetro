@@ -14,6 +14,7 @@ void initSystem(void)
 	initGpio();		//Inicializo entradas y salidas
 	initADC();		//Inicializo el ADC
 	initPWM();		//Inicializo el PWM
+	initUart();
 //	set_sleep_mode(SLEEP_MODE_PWR_DOWN);//Selecciono power-down mode
 	setLedState(AWAKE);
 	setLed(IR);
