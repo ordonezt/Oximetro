@@ -23,7 +23,7 @@ void SysTick_Handler(void)
 //	 if(n == 10000)					//20 seg
 //		 flags.bits.sleep_time = 1;
 
-	 if(n%(SAMPLE_PERIOD/2) == 0)					//5 ms
+	 if(n%(SAMPLE_PERIOD/2) == 0)					// ms
 		 Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);		//Start conversion
 
 	 if(n%40 == 0)
@@ -36,6 +36,7 @@ void SysTick_Handler(void)
 			flags.no_finger_times = 0;
 	 }
 
+	 graphic();
 	 n %= 10000;
 	 n++;
 }

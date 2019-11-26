@@ -13,6 +13,8 @@
 
 float freq = 0;
 
+extern RINGBUFF_T txring;
+
 const float h[N_RAW] =
 {
 		0.038626528332096295,
@@ -107,8 +109,6 @@ void process(pulse_t *pulse)
 
 	float aux = 0;
 
-	pulse->pos_Dmax++;
-
 	//filter raw signal
 	shiftBuffer(smooth[pulse->Led], N_SMOOTH);
 	smooth[pulse->Led][0] = filter(raw[pulse->Led], h, N_RAW);
@@ -118,7 +118,7 @@ void process(pulse_t *pulse)
 	gradient[pulse->Led][0] = smooth[pulse->Led][0] - smooth[pulse->Led][2];//remember the derivative is shifted by 1 sample
 
 	//check for derivative peak(rising edge)
-	for(i = 1, aux = gradient[pulse->Led][0]; i < N_GRADIENT; i++){
+	for(i = 1, aux = gradient[pulse->Led][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
 		if(gradient[pulse->Led][i] > aux)
 		{
 			aux = gradient[pulse->Led][i];
@@ -127,19 +127,22 @@ void process(pulse_t *pulse)
 	}
 
 	if(pos_aux != pulse->pos_Dmax){
-		new_peak[pulse->Led] = 1;
-		freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
-		pulse->pos_Dmax = pos_aux;
+		if((pulse->pos_Dmax - pos_aux) > 5 ){
+			new_peak[pulse->Led] = 1;
+			freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
+			RingBuffer_Insert(&txring, (uint8_t*) &freq);
+			pulse->pos_Dmax = pos_aux;
+		}
 	}
 
-	if (new_peak[RED] == 1 && new_peak[IR] == 1) {
-		flags.beat_detected = true;
-		new_peak[RED] = 0;
-		new_peak[IR] = 0;
-		cuenta_muestras = 0;
-		Chip_GPIO_SetPinToggle(LPC_GPIO, STATE_PORT, STATE_PIN);
-	}
-//	if (flag.beat_detected){
+//	if (new_peak[RED] == 1 && new_peak[IR] == 1) {
+//		flags.beat_detected = true;
+//		new_peak[RED] = 0;
+//		new_peak[IR] = 0;
+//		cuenta_muestras = 0;
+//		Chip_GPIO_SetPinToggle(LPC_GPIO, STATE_PORT, STATE_PIN);
+//	}
+//	if (flags.beat_detected){
 //		cuenta_muestras++;
 //	}
 
@@ -148,30 +151,37 @@ void process(pulse_t *pulse)
 //		flags.beat_detected = true;
 //		new_peak = 0;
 //	}
+
+	pulse->pos_Dmax++;
+
 }
 
-void get_min_max_values(pulse_t *Data[]){
-	led_t led_local;
-	uint16_t i, min, max, pos_Dmax;
-
-	for (led_local = RED; led_local <= IR; led_local++) {
-
-		pos_Dmax = Data[led_local]->pos_Dmax;
-
-		min = smooth[led_local][pos_Dmax];
-
-		for(i = pos_Dmax; i < (pos_Dmax + MIN_WINDOW); i++){
-			if(smooth[led_local][i] < min)
-				min = smooth[led_local][i];
-		}
-
-		max = smooth[led_local][pos_Dmax];
-
-		for(i = pos_Dmax; i > (pos_Dmax - MAX_WINDOW); i--){
-			if(smooth[led_local][i] > max)
-				max = smooth[led_local][i];
-		}
-		Data[led_local]->Min = min;
-		Data[led_local]->Max = max;
-	}
-}
+//void get_min_max_values(pulse_t *Data[2]){
+//	led_t led_local;
+//	uint16_t i, min, max, pos_Dmax;
+//
+//	for (led_local = RED; led_local <= IR; led_local++) {
+//
+//		pos_Dmax = Data[led_local]->pos_Dmax;
+//
+//		min = smooth[led_local][pos_Dmax];
+//
+//		for(i = pos_Dmax; i < (pos_Dmax + MIN_WINDOW); i++){
+//			if(smooth[led_local][i] < min)
+//				min = smooth[led_local][i];
+//		}
+//
+//		max = smooth[led_local][pos_Dmax];
+//
+//		for(i = pos_Dmax; i > (pos_Dmax - MAX_WINDOW) && i > 0; i--){
+//			if(smooth[led_local][i] > max)
+//				max = smooth[led_local][i];
+//		}
+//		Data[led_local]->Min = min;
+//		Data[led_local]->Max = max;
+//	}
+//}
+//
+//float get_R_value(pulse_t *Data[2]){
+//
+//}

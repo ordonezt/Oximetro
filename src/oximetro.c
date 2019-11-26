@@ -68,7 +68,7 @@ int main(void) {
 								flags.beat_detected = false;
 								cuenta_muestras = 0;
 
-								// obtenemos min y max
+								//get_min_max_values(Data);
 								// obtenemos R
 								// obtenemos Pulsos
 

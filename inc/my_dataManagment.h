@@ -17,8 +17,8 @@
 #define N_GRADIENT 250
 #define N_SMOOTH BUFFER_LENGTH
 
-#define MAX_WINDOW 10
-#define MIN_WINDOW 10
+#define MAX_WINDOW 100
+#define MIN_WINDOW 100
 //-----------------------------------TIPOS DE DATOS-----------------------------
 
 typedef struct {
