@@ -37,10 +37,18 @@ void initUart(void){
 void graphic(void){
 
 	uint32_t data;
+	int initial = '@';
+	static int cont = 0;
+
+	int frecuencia = (uint8_t) smooth[0][0];
 
 	if(!Chip_UART_CheckBusy(UART_Def)){
 		//if(RingBuffer_Pop(&txring, &data)){
-			Chip_UART_SendByte(UART_Def, (uint8_t) bpm);
+		if (cont)
+			Chip_UART_SendByte(UART_Def, frecuencia);
+		else
+			Chip_UART_SendByte(UART_Def, initial);
 		//}
 	}
+	cont = !cont;
 }

@@ -123,6 +123,7 @@ void process(pulse_t *pulse)
 {
 	static uint8_t new_peak[2]={0,0};
 
+	char string[2];
 	uint8_t i, pos_aux = 0;
 	//uint8_t n = '\n';
 
@@ -132,6 +133,9 @@ void process(pulse_t *pulse)
 	//filter raw signal
 	shiftBuffer(smooth[pulse->Led], N_SMOOTH);
 	smooth[pulse->Led][0] = filter(raw[pulse->Led], h, N_RAW);
+
+	//OLED_Signal(smooth[pulse->Led][0]);
+	//OLED_UpdateScreen();
 
 	//obtain signal's derivative
 	shiftBuffer(gradient[pulse->Led], N_GRADIENT);
@@ -152,6 +156,9 @@ void process(pulse_t *pulse)
 		//freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
 		deltaN=pulse->pos_Dmax-pos_aux;
 		bpm = 60000 / (deltaN * SAMPLE_PERIOD);
+		//OLED_SetCursor(0,0);
+		//OLED_WriteString(itoa(bpm,string,10),Font_11x18,White);
+		//OLED_UpdateScreen();
 		//RingBuffer_Insert(&txring, &n);
 		//RingBuffer_Insert(&txring, &n);
 		pulse->pos_Dmax = pos_aux;

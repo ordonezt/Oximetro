@@ -21,6 +21,9 @@
 
 volatile flags_t flags = {0};
 
+SPI_CONFIG_FORMAT_T spi_format;
+SPI_DATA_SETUP_T spi_xf;
+
 int main(void) {
 
 #if defined (__USE_LPCOPEN)

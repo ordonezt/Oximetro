@@ -10,6 +10,7 @@
 
 #include "math.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include "board.h"
 #include "my_power.h"
 #include "my_extInt.h"
@@ -24,6 +25,7 @@
 #include "my_system.h"
 #include "my_twi.h"
 #include "my_uart.h"
+#include "my_OLED.h"
 
 #define MAX_NO_FINGER_TIME 7
 
