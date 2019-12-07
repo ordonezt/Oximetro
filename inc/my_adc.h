@@ -11,6 +11,8 @@
 #define ADC_PORT	0
 #define ADC_PIN		23
 
+#define BUFFER_ADC 256
+
 void initADC(void);
 
 #endif /* MY_ADC_H_ */

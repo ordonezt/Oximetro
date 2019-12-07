@@ -8,10 +8,15 @@
 
 #include "my_include.h"
 
-static ADC_CLOCK_SETUP_T ADCSetup;
+float ADC_Buffer[BUFFER_HEIGHT][BUFFER_ADC];
+int In_Index[BUFFER_HEIGHT], Out_Index[BUFFER_HEIGHT];
+
+extern volatile led_t led;
 
 void initADC(void)
 {
+	static ADC_CLOCK_SETUP_T ADCSetup;
+
 	Chip_IOCON_PinMux(LPC_IOCON, ADC_PORT, ADC_PIN, IOCON_MODE_INACT, IOCON_FUNC1);
 
 	Chip_ADC_Init(LPC_ADC, &ADCSetup);
@@ -29,13 +34,13 @@ void ADC_IRQHandler(void){
 	Chip_ADC_ReadValue(LPC_ADC, ADC_CH0, &data);
 
 	//Solo entro si ya lei el dato anterior
-	if(!flags.conversion_done)
-	{
-		flags.conversion_done = true;
+//	if(!flags.conversion_done)
+//	{
+//		flags.conversion_done = true;
 
-		//get raw signal
-		shiftBuffer(raw[led], N_RAW);
+	ADC_Buffer[led][In_Index[led]] = data;
+	In_Index[led]++;
+	In_Index[led] %= BUFFER_LARGE;
 
-		raw[led][0] = data;
-	}
+//	}
 }
