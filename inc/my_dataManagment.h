@@ -49,7 +49,7 @@ extern float gradient[BUFFER_HEIGHT][N_GRADIENT];
 extern RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
 
 //-----------------------------------PROTOTIPOS----------------------------------
-void checkFinger(void);
+uint8_t checkFinger(void);
 uint8_t calculateSpO2(pulse_t *Data[]);
 uint8_t calculateBPM(void);
 float filter (volatile float* x,const float* h, uint8_t length);

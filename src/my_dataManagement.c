@@ -40,7 +40,7 @@ float gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 volatile uint8_t cuenta_muestras = 0;
 uint8_t pos_peak[2] = {0,0};
 
-void checkFinger(void)
+uint8_t checkFinger(void)
 {
 //	uint8_t i;
 //	float aux = 0;
@@ -54,13 +54,14 @@ void checkFinger(void)
 //		flags.is_finger = true;
 //	else
 //		flags.is_finger = false;
-
+//	return aux > THRESHOLD;
 
 
 //	flags.is_finger = !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
 
 
-	flags.is_finger = true;
+//	flags.is_finger = true;
+	return TRUE;
 }
 
 uint8_t calculateSpO2(pulse_t *Data[])
