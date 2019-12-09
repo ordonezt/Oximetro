@@ -260,11 +260,5 @@
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
-		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.297543463;com.crt.advproject.config.exe.debug.297543463.;com.crt.advproject.gcc.exe.debug.1344359123;com.crt.advproject.compiler.input.1731801214">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="com.crt.advproject.config.exe.debug.297543463;com.crt.advproject.config.exe.debug.297543463.;com.crt.advproject.gas.exe.debug.907721185;com.crt.advproject.assembler.input.195661474">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.crt.advproject.GCCManagedMakePerProjectProfile"/>
-		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>
