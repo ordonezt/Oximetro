@@ -10,8 +10,11 @@
 
 #define N_TIMES	6
 
-#define STATE_PORT		0
-#define STATE_PIN		22
+#define STATE_PORT			0
+#define STATE_PIN			22
+
+#define BLINK_PORT			3
+#define BLINK_PIN			26
 
 #define BTN_PORT			2
 #define BTN_PIN				10
@@ -23,6 +26,7 @@ void initGpio(void);
 void debounce(void);
 bool getKey(void);
 void setLedState(bool state);
+void toggleLed(void);
 
 typedef enum{NO_PRESSED, PRESSED}keyState_t;
 

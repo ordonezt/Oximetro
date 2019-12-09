@@ -18,19 +18,28 @@ void initGpio(void)
 	//Salidas
 	//Pin salida para estado P0.22
 	Chip_IOCON_PinMuxSet(LPC_IOCON, STATE_PORT, STATE_PIN, IOCON_FUNC0);
-	Chip_GPIO_WriteDirBit(LPC_GPIO, STATE_PORT, STATE_PIN, true);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, STATE_PORT, STATE_PIN, TRUE);
+	//Pin salida para blink P3.26
+	Chip_IOCON_PinMuxSet(LPC_IOCON, BLINK_PORT, BLINK_PIN, IOCON_FUNC0);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, BLINK_PORT, BLINK_PIN, TRUE);
 
 	//Entradas
 	Chip_IOCON_PinMuxSet(LPC_IOCON, BTN_PORT, BTN_PIN, IOCON_FUNC0 | IOCON_MODE_PULLUP);
-	Chip_GPIO_WriteDirBit(LPC_GPIO, BTN_PORT, BTN_PIN, false);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, BTN_PORT, BTN_PIN, FALSE);
 
 	Chip_IOCON_PinMuxSet(LPC_IOCON, DC_LEVEL_PORT, DC_LEVEL_PIN, IOCON_FUNC0 | IOCON_MODE_PULLUP);
-	Chip_GPIO_WriteDirBit(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN, false);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN, FALSE);
 }
 
 void setLedState(bool state)
 {
 	Chip_GPIO_SetPinState(LPC_GPIO, STATE_PORT, STATE_PIN, !state); //Led activo bajo
+}
+
+void toggleLed(void)
+{
+	led = !led;
+	setLed(led);
 }
 
 void debounce(void)
@@ -49,12 +58,12 @@ void debounce(void)
 		if(button.state == NO_PRESSED && curr == PRESSED)
 		{
 			button.state = PRESSED;
-			button.wasPressed = true;
+			button.wasPressed = TRUE;
 		}
 		else if(button.state == PRESSED && curr == NO_PRESSED)
 		{
 			button.state = NO_PRESSED;
-			button.wasRelease = true;
+			button.wasRelease = TRUE;
 		}
 		else
 			button.state = curr;

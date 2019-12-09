@@ -19,4 +19,5 @@ void initSystem(void)
 	setLedState(AWAKE);
 	setLed(IR);
 	initOLED();
+	tick = 0;
 }

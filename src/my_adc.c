@@ -8,14 +8,14 @@
 
 #include "my_include.h"
 
-float ADC_Buffer[BUFFER_HEIGHT][BUFFER_ADC];
-int In_Index[BUFFER_HEIGHT], Out_Index[BUFFER_HEIGHT];
-
-extern volatile led_t led;
+uint16_t ADC_Buffer[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
 
 void initADC(void)
 {
 	static ADC_CLOCK_SETUP_T ADCSetup;
+
+	RingBuffer_Init(&RingBuffADC[RED], &ADC_Buffer[RED], sizeof(ADC_Buffer[RED][0]), BUFFER_LENGTH);
+	RingBuffer_Init(&RingBuffADC[IR], &ADC_Buffer[IR], sizeof(ADC_Buffer[IR][0]), BUFFER_LENGTH);
 
 	Chip_IOCON_PinMux(LPC_IOCON, ADC_PORT, ADC_PIN, IOCON_MODE_INACT, IOCON_FUNC1);
 
@@ -26,6 +26,10 @@ void initADC(void)
 
 	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH0, ENABLE);
 	Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH0, ENABLE);
+
+	Chip_ADC_SetSampleRate(LPC_ADC, &ADCSetup, SAMPLE_RATE_HZ);
+
+	Chip_ADC_SetBurstCmd(LPC_ADC, ENABLE);
 }
 
 void ADC_IRQHandler(void){
@@ -33,14 +37,7 @@ void ADC_IRQHandler(void){
 
 	Chip_ADC_ReadValue(LPC_ADC, ADC_CH0, &data);
 
-	//Solo entro si ya lei el dato anterior
-//	if(!flags.conversion_done)
-//	{
-//		flags.conversion_done = true;
+	flags.adc_buffer_error = !RingBuffer_Insert(&RingBuffADC[led], &data);
 
-	ADC_Buffer[led][In_Index[led]] = data;
-	In_Index[led]++;
-	In_Index[led] %= BUFFER_LARGE;
-
-//	}
+	toggleLed();
 }

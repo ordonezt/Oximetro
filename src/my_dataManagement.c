@@ -17,6 +17,8 @@ uint32_t deltaN=0;
 
 extern RINGBUFF_T txring;
 
+RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
+
 const float h[N_RAW] =
 {
 		0.038626528332096295,

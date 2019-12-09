@@ -13,6 +13,8 @@
 
 #define BUFFER_ADC 256
 
+#define SAMPLE_RATE_HZ 		500
+
 void initADC(void);
 
 #endif /* MY_ADC_H_ */

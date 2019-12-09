@@ -10,7 +10,8 @@
 
 //----------------------------------CONSTANTES----------------------------------
 #define BUFFER_HEIGHT	2
-#define BUFFER_LENGTH 	400	//2 seg de span
+#define BUFFER_LENGTH 	512 //2^9 la razon de este tamaño es que tiene que ser potencia de dos para que anden las funciones de ring buffer
+//#define BUFFER_LENGTH 	400	//2 seg de span
 							//Tamaño del buffer 2*400*2B = 1,6 KB
 
 #define N_RAW	7
@@ -45,7 +46,7 @@ extern float raw[BUFFER_HEIGHT][N_RAW];
 extern float smooth[BUFFER_HEIGHT][BUFFER_LENGTH];
 extern float gradient[BUFFER_HEIGHT][N_GRADIENT];
 
-
+extern RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
 
 //-----------------------------------PROTOTIPOS----------------------------------
 void checkFinger(void);
