@@ -54,7 +54,7 @@ int main(void) {
 				{
 					RingBuffer_Pop(&RingBuffADC[RED], &data[RED]);
 					RingBuffer_Pop(&RingBuffADC[IR], &data[IR]);
-//					process(data);
+					process(data);
 				}
 
 				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)

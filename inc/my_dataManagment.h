@@ -52,7 +52,6 @@ extern RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
 uint8_t checkFinger(void);
 uint8_t calculateSpO2(pulse_t *Data[]);
 uint8_t calculateBPM(void);
-float filter (volatile float* x,const float* h, uint8_t length);
 void shiftBuffer(float *buffer, uint16_t length);
 void get_min_max_values(pulse_t *Data[]);
 void process(pulse_t *pulse);

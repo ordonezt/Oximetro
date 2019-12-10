@@ -26,6 +26,7 @@
 #include "my_twi.h"
 #include "my_uart.h"
 #include "my_OLED.h"
+#include "filters.h"
 
 #define MAX_NO_FINGER_TIME 7
 

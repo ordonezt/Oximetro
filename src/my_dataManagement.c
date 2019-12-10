@@ -19,17 +19,6 @@ extern RINGBUFF_T txring;
 
 RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
 
-const float h[N_RAW] =
-{
-		0.038626528332096295,
-		0.14300345854663776,
-		0.233752240231106,
-		0.28624515754407337,
-		0.233752240231106,
-		0.14300345854663776,
-		0.038626528332096295,
-};
-
 const uint8_t A = 110;
 const uint8_t B = 25;
 
@@ -40,89 +29,7 @@ float gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 volatile uint8_t cuenta_muestras = 0;
 uint8_t pos_peak[2] = {0,0};
 
-uint8_t checkFinger(void)
-{
-//	uint8_t i;
-//	float aux = 0;
-//
-//	for(i = 0; i < N_FINGER; i++)
-//		aux += abs(smooth[IR][i] - DC_LEVEL);
-//
-//	aux /= N_FINGER;
-//
-//	if(aux > THRESHOLD)
-//		flags.is_finger = true;
-//	else
-//		flags.is_finger = false;
-//	return aux > THRESHOLD;
-
-
-//	flags.is_finger = !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
-
-
-//	flags.is_finger = true;
-	return TRUE;
-}
-
-uint8_t calculateSpO2(pulse_t *Data[])
-{
-	uint8_t i = 0;
-
-#if(PROM == PROM_R)
-
-	float R = 0;
-	uint8_t SpO2 = 0;
-
-	for(i = 0; i < N_PROM; i++)
-		R += log10(Data[RED]->Max[i] / Data[RED]->Min[i]) / log10(Data[IR]->Max[i] / Data[IR]->Min[i]);
-
-	R = (R / N_PROM);
-
-	SpO2 = A - (B * R);
-
-#endif
-
-#if(PROM == PROM_SPO2)
-
-	float R = 0;
-	uint16_t SpO2 = 0;
-
-		for(i = 0; i < SAMPLES_LENGTH; i++)
-	{
-		R = log10(MAX[RED][i] / MIN[RED][i]) / log10(MAX[IR][i] / MIN[IR][i]);
-		SpO2 += A - (B * R);
-	}
-
-	SpO2 /= SAMPLES_LENGTH;
-#endif
-
-	return SpO2;
-}
-
-uint8_t calculateBPM(void)
-{
-	return 60000 / (deltaN * SAMPLE_PERIOD);
-}
-
-float filter (volatile float* x,const float* h, uint8_t length)
-{
-	uint8_t n = 0;
-	float y = 0;
-
-	for(n = 0; n < length; n++)
-		y += ((float)x[n]) * h[n];
-
-	return y;
-}
-
-void shiftBuffer(float *buffer, uint16_t length)
-{
-	uint16_t i;
-	for(i = length-1; i > 0; i--)
-		buffer[i] = buffer[i-1];
-}
-
-void process(pulse_t *pulse)
+void process(pulse_t *pulse) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY DE *pulse y calculamos frecuencia de pulso y oxigeno y dejamos en globales
 {
 	static uint8_t new_peak[2]={0,0};
 
@@ -220,3 +127,74 @@ void get_min_max_values(pulse_t *Data[]){
 //float get_R_value(pulse_t *Data[2]){
 //
 //}
+
+uint8_t checkFinger(void)
+{
+//	uint8_t i;
+//	float aux = 0;
+//
+//	for(i = 0; i < N_FINGER; i++)
+//		aux += abs(smooth[IR][i] - DC_LEVEL);
+//
+//	aux /= N_FINGER;
+//
+//	if(aux > THRESHOLD)
+//		flags.is_finger = true;
+//	else
+//		flags.is_finger = false;
+//	return aux > THRESHOLD;
+
+
+//	flags.is_finger = !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
+
+
+//	flags.is_finger = true;
+	return TRUE;
+}
+
+uint8_t calculateSpO2(pulse_t *Data[])
+{
+	uint8_t i = 0;
+
+#if(PROM == PROM_R)
+
+	float R = 0;
+	uint8_t SpO2 = 0;
+
+	for(i = 0; i < N_PROM; i++)
+		R += log10(Data[RED]->Max[i] / Data[RED]->Min[i]) / log10(Data[IR]->Max[i] / Data[IR]->Min[i]);
+
+	R = (R / N_PROM);
+
+	SpO2 = A - (B * R);
+
+#endif
+
+#if(PROM == PROM_SPO2)
+
+	float R = 0;
+	uint16_t SpO2 = 0;
+
+		for(i = 0; i < SAMPLES_LENGTH; i++)
+	{
+		R = log10(MAX[RED][i] / MIN[RED][i]) / log10(MAX[IR][i] / MIN[IR][i]);
+		SpO2 += A - (B * R);
+	}
+
+	SpO2 /= SAMPLES_LENGTH;
+#endif
+
+	return SpO2;
+}
+
+uint8_t calculateBPM(void)
+{
+	return 60000 / (deltaN * SAMPLE_PERIOD);
+}
+
+void shiftBuffer(float *buffer, uint16_t length)
+{
+	uint16_t i;
+	for(i = length-1; i > 0; i--)
+		buffer[i] = buffer[i-1];
+}
