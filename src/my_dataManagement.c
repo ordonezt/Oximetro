@@ -29,49 +29,52 @@ float gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 volatile uint8_t cuenta_muestras = 0;
 uint8_t pos_peak[2] = {0,0};
 
-void process(pulse_t *pulse) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY DE *pulse y calculamos frecuencia de pulso y oxigeno y dejamos en globales
+void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY DE *pulse y calculamos frecuencia de pulso y oxigeno y dejamos en globales
 {
 	static uint8_t new_peak[2]={0,0};
 
-	char string[2];
+//	char string[2];
 	uint8_t i, pos_aux = 0;
 	//uint8_t n = '\n';
 
 	float aux = 0;
-	char n = '1';
+	//char n = '1';
 
-	//filter raw signal
-	shiftBuffer(smooth[pulse->Led], N_SMOOTH);
-	smooth[pulse->Led][0] = filter(raw[pulse->Led], h, N_RAW);
+	for (led = RED; led < 2; led = !led){
 
-	//OLED_Signal(smooth[pulse->Led][0]);
-	//OLED_UpdateScreen();
+		//filter raw signal
+		shiftBuffer(smooth[led], N_SMOOTH);
+		smooth[led][0] = filter(&pulse[led].muestra, h, N_RAW);
 
-	//obtain signal's derivative
-	shiftBuffer(gradient[pulse->Led], N_GRADIENT);
-	gradient[pulse->Led][0] = smooth[pulse->Led][0] - smooth[pulse->Led][2];//remember the derivative is shifted by 1 sample
-
-	//check for derivative peak(rising edge)
-	for(i = 1, aux = gradient[pulse->Led][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
-		if(gradient[pulse->Led][i] > aux)
-		{
-			aux = gradient[pulse->Led][i];
-			pos_aux = i;
-		}
-	}
-
-	if(pos_aux != pulse->pos_Dmax){
-		//if((pulse->pos_Dmax - pos_aux) > 5 ){}
-		new_peak[pulse->Led] = 1;
-		//freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
-		deltaN=pulse->pos_Dmax-pos_aux;
-		bpm = 60000 / (deltaN * SAMPLE_PERIOD);
-		//OLED_SetCursor(0,0);
-		//OLED_WriteString(itoa(bpm,string,10),Font_11x18,White);
+		//OLED_Signal(smooth[pulse->Led][0]);
 		//OLED_UpdateScreen();
-		//RingBuffer_Insert(&txring, &n);
-		//RingBuffer_Insert(&txring, &n);
-		pulse->pos_Dmax = pos_aux;
+
+		//obtain signal's derivative
+		shiftBuffer(gradient[led], N_GRADIENT);
+		gradient[led][0] = smooth[led][0] - smooth[led][2];//remember the derivative is shifted by 1 sample
+
+		//check for derivative peak(rising edge)
+		for(i = 1, aux = gradient[led][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
+			if(gradient[led][i] > aux)
+			{
+				aux = gradient[led][i];
+				pos_aux = i;
+			}
+		}
+
+		if(pos_aux != pulse[led].pos_Dmax){
+			//if((pulse->pos_Dmax - pos_aux) > 5 ){}
+			new_peak[led] = 1;
+			//freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
+			deltaN=pulse[led].pos_Dmax-pos_aux;
+			bpm = 60000 / (deltaN * SAMPLE_PERIOD);
+			//OLED_SetCursor(0,0);
+			//OLED_WriteString(itoa(bpm,string,10),Font_11x18,White);
+			//OLED_UpdateScreen();
+			//RingBuffer_Insert(&txring, &n);
+			//RingBuffer_Insert(&txring, &n);
+			pulse[led].pos_Dmax = pos_aux;
+		}
 	}
 
 	if (new_peak[RED] == 1 && new_peak[IR] == 1) {
@@ -91,7 +94,8 @@ void process(pulse_t *pulse) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY
 //		new_peak = 0;
 //	}
 
-	pulse->pos_Dmax++;
+	pulse[RED].pos_Dmax++;
+	pulse[IR].pos_Dmax++;
 }
 
 void get_min_max_values(pulse_t *Data[]){

@@ -37,6 +37,8 @@ int main(void) {
 
     uint16_t data[BUFFER_HEIGHT] = {0};
 
+    pulse_t pulsos[BUFFER_HEIGHT];
+
     initSystem();
 
     while(1)
@@ -52,9 +54,9 @@ int main(void) {
 			case AWAKE:
 				while(!RingBuffer_IsEmpty(&RingBuffADC[RED]) && !RingBuffer_IsEmpty(&RingBuffADC[IR]))
 				{
-					RingBuffer_Pop(&RingBuffADC[RED], &data[RED]);
-					RingBuffer_Pop(&RingBuffADC[IR], &data[IR]);
-					process(data);
+					RingBuffer_Pop(&RingBuffADC[RED], &pulsos[RED].muestra);
+					RingBuffer_Pop(&RingBuffADC[IR], &pulsos[IR].muestra);
+					process(pulsos);
 				}
 
 				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
@@ -93,7 +95,7 @@ int main(void) {
 				goToSleep();
 				//Si llegue aca es por que desperte, voy a estado normal
 				while(power_state == SLEEP){
-					//Espero a que suelte el boton aca, por que si no vuelvo a dormir
+					//Espero a que suelte el boton aca, porque si no vuelvo a dormir
 					if(button.wasRelease == TRUE){
 						button.wasRelease = FALSE;
 						power_state = AWAKE;
