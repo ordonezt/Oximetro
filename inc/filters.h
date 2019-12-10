@@ -8,6 +8,9 @@
 #ifndef FILTERS_H_
 #define FILTERS_H_
 
-float filter (volatile float* x,const float* h, uint8_t length);
+extern const float h[N_RAW];
+extern uint16_t taps[N_RAW];
+
+float filter(uint16_t sample, const float* h, uint16_t* taps, uint8_t length);
 
 #endif /* FILTERS_H_ */

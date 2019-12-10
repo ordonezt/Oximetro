@@ -37,7 +37,6 @@ typedef struct {
 } pulse_t;
 
 //-----------------------------------EXTERNAS-----------------------------------
-extern const float h[N_RAW];
 extern const uint8_t A;
 extern const uint8_t B;
 extern volatile uint8_t cuenta_muestras;
