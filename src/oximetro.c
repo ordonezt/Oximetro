@@ -33,9 +33,9 @@ int main(void) {
 
     statePwr_t power_state = AWAKE;
 
-    static uint32_t debounceTick = 0, displayTick = 0, blinkTick = 0, uartTxTick = 0, checkFingerTick = 0;
+    int tiempo = 0;
 
-    uint16_t data[BUFFER_HEIGHT] = {0};
+    static uint32_t debounceTick = 0, displayTick = 0, blinkTick = 0, uartTxTick = 0, checkFingerTick = 0;
 
     pulse_t pulsos[BUFFER_HEIGHT];
 
@@ -54,11 +54,12 @@ int main(void) {
 			case AWAKE:
 				while(!RingBuffer_IsEmpty(&RingBuffADC[RED]) && !RingBuffer_IsEmpty(&RingBuffADC[IR]))
 				{
+					tiempo = tick - tiempo;
 					RingBuffer_Pop(&RingBuffADC[RED], &pulsos[RED].muestra);
 					RingBuffer_Pop(&RingBuffADC[IR], &pulsos[IR].muestra);
-					process(pulsos);
+					//process(pulsos);
 				}
-
+				tiempo = tick;
 				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
 				{
 					button.wasRelease = false;

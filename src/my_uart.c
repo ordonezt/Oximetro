@@ -44,7 +44,7 @@ void UartTransmit(void)
 
 void graphic(void){
 
-	uint32_t data;
+	//uint32_t data;
 	int initial = '@';
 	static int cont = 0;
 

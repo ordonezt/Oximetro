@@ -19,6 +19,7 @@ void initTimer(void)
 void SysTick_Handler(void)
 {
 	 tick++;
+
 //	 checkFinger(); Sacar ajuera
 
 //	 if(tick%(SAMPLE_PERIOD/2) == 0)					//2 ms

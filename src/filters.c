@@ -19,18 +19,17 @@ const float h[N_RAW] =
 		0.038626528332096295,
 };
 
-uint16_t taps[N_RAW] = {0};
+float taps[N_RAW] = {0}; //TODO hacer un taps para cada led
 
-float filter(uint16_t sample, const float* h, uint16_t* taps, uint8_t length)
+float filter(float sample, const float* h, float* tapsLocal, uint8_t length)
 {
 	uint8_t n = 0;
 	float y = 0;
-
-	shiftBuffer(taps, length);
-	taps[0] = sample;
+	shiftBuffer(tapsLocal, length);
+	tapsLocal[0] = sample;
 
 	for(n = 0; n < length; n++)
-		y += ((float)taps[n]) * h[n];
+		y += ((float)tapsLocal[n]) * h[n];
 
 	return y;
 }

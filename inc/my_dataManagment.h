@@ -31,7 +31,7 @@
 
 typedef struct {
 	uint16_t Led;
-	float muestra;
+	uint16_t muestra;
 	float Max[N_PROM];
 	float Min[N_PROM];
 	uint8_t pos_Dmax;

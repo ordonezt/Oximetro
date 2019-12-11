@@ -32,6 +32,7 @@ uint8_t pos_peak[2] = {0,0};
 void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY DE *pulse y calculamos frecuencia de pulso y oxigeno y dejamos en globales
 {
 	static uint8_t new_peak[2]={0,0};
+	uint8_t pulse_led;
 
 //	char string[2];
 	uint8_t i, pos_aux = 0;
@@ -40,40 +41,40 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 	float aux = 0;
 	//char n = '1';
 
-	for (led = RED; led < 2; led = !led){
+	for (pulse_led = RED; pulse_led < 2; pulse_led++){
 
 		//filter raw signal
-		shiftBuffer(smooth[led], N_SMOOTH);
-		smooth[led][0] = filter(&pulse[led].muestra, h, N_RAW);
+		shiftBuffer(smooth[pulse_led], N_SMOOTH);
+		smooth[pulse_led][0] = filter((float)pulse[pulse_led].muestra, h, taps, N_RAW);
 
 		//OLED_Signal(smooth[pulse->Led][0]);
 		//OLED_UpdateScreen();
 
 		//obtain signal's derivative
-		shiftBuffer(gradient[led], N_GRADIENT);
-		gradient[led][0] = smooth[led][0] - smooth[led][2];//remember the derivative is shifted by 1 sample
+		shiftBuffer(gradient[pulse_led], N_GRADIENT);
+		gradient[pulse_led][0] = smooth[pulse_led][0] - smooth[pulse_led][2];//remember the derivative is shifted by 1 sample
 
 		//check for derivative peak(rising edge)
-		for(i = 1, aux = gradient[led][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
-			if(gradient[led][i] > aux)
+		for(i = 1, aux = gradient[pulse_led][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
+			if(gradient[pulse_led][i] > aux)
 			{
-				aux = gradient[led][i];
+				aux = gradient[pulse_led][i];
 				pos_aux = i;
 			}
 		}
 
-		if(pos_aux != pulse[led].pos_Dmax){
+		if(pos_aux != pulse[pulse_led].pos_Dmax){
 			//if((pulse->pos_Dmax - pos_aux) > 5 ){}
-			new_peak[led] = 1;
+			new_peak[pulse_led] = 1;
 			//freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
-			deltaN=pulse[led].pos_Dmax-pos_aux;
+			deltaN=pulse[pulse_led].pos_Dmax-pos_aux;
 			bpm = 60000 / (deltaN * SAMPLE_PERIOD);
 			//OLED_SetCursor(0,0);
 			//OLED_WriteString(itoa(bpm,string,10),Font_11x18,White);
 			//OLED_UpdateScreen();
 			//RingBuffer_Insert(&txring, &n);
 			//RingBuffer_Insert(&txring, &n);
-			pulse[led].pos_Dmax = pos_aux;
+			pulse[pulse_led].pos_Dmax = pos_aux;
 		}
 	}
 
@@ -81,7 +82,7 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 		flags.beat_detected = true;
 		new_peak[RED] = 0;
 		new_peak[IR] = 0;
-		cuenta_muestras = 0;
+		//cuenta_muestras = 0;
 		Chip_GPIO_SetPinToggle(LPC_GPIO, STATE_PORT, STATE_PIN);
 	}
 //	if (flags.beat_detected){
@@ -200,5 +201,5 @@ void shiftBuffer(float *buffer, uint16_t length)
 {
 	uint16_t i;
 	for(i = length-1; i > 0; i--)
-		buffer[i] = buffer[i-1];
+		buffer[i]=buffer[i-1];
 }
