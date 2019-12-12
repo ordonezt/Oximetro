@@ -10,4 +10,5 @@
 
 void updateDisplay(void) {
 	//TODO hacer la rutina de refresco según display elegido
+	//OledSignal(smooth[IR][0]);
 }
