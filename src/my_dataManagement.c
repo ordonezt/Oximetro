@@ -32,68 +32,49 @@ uint8_t pos_peak[2] = {0,0};
 void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY DE *pulse y calculamos frecuencia de pulso y oxigeno y dejamos en globales
 {
 	static uint8_t new_peak[2]={0,0};
-	uint8_t pulse_led;
+	uint8_t led_index;
 
-//	char string[2];
 	uint8_t i, pos_aux = 0;
-	//uint8_t n = '\n';
 
 	float aux = 0;
-	//char n = '1';
 
-	for (pulse_led = RED; pulse_led < 2; pulse_led++){
-
+	for (led_index = RED; led_index < 2; led_index++)
+	{
 		//filter raw signal
-		shiftBuffer(smooth[pulse_led], N_SMOOTH);
-		smooth[pulse_led][0] = filter((float)pulse[pulse_led].muestra, h, taps, N_RAW);
-
-		//OLED_Signal(smooth[pulse->Led][0]);
-		//OLED_UpdateScreen();
+		shiftBuffer(smooth[led_index], N_SMOOTH);
+		smooth[led_index][0] = filter((float)pulse[led_index].muestra, h, taps[led_index], N_RAW);
 
 		//obtain signal's derivative
-		shiftBuffer(gradient[pulse_led], N_GRADIENT);
-		gradient[pulse_led][0] = smooth[pulse_led][0] - smooth[pulse_led][2];//remember the derivative is shifted by 1 sample
+		shiftBuffer(gradient[led_index], N_GRADIENT);
+		gradient[led_index][0] = smooth[led_index][0] - smooth[led_index][2];//remember the derivative is shifted by 1 sample
 
 		//check for derivative peak(rising edge)
-		for(i = 1, aux = gradient[pulse_led][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
-			if(gradient[pulse_led][i] > aux)
+		for(i = 1, aux = gradient[led_index][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
+			if(gradient[led_index][i] > aux)
 			{
-				aux = gradient[pulse_led][i];
+				aux = gradient[led_index][i];
 				pos_aux = i;
 			}
 		}
 
-		if(pos_aux != pulse[pulse_led].pos_Dmax){
-			//if((pulse->pos_Dmax - pos_aux) > 5 ){}
-			new_peak[pulse_led] = 1;
-			//freq=1000/(float)(SAMPLE_PERIOD*(pulse->pos_Dmax-pos_aux));
-			deltaN=pulse[pulse_led].pos_Dmax-pos_aux;
+		if(pos_aux != pulse[led_index].pos_Dmax)
+		{
+			new_peak[led_index] = TRUE;
+			deltaN=pulse[led_index].pos_Dmax-pos_aux;
 			bpm = 60000 / (deltaN * SAMPLE_PERIOD);
-			//OLED_SetCursor(0,0);
-			//OLED_WriteString(itoa(bpm,string,10),Font_11x18,White);
-			//OLED_UpdateScreen();
-			//RingBuffer_Insert(&txring, &n);
-			//RingBuffer_Insert(&txring, &n);
-			pulse[pulse_led].pos_Dmax = pos_aux;
+			pulse[led_index].pos_Dmax = pos_aux;
 		}
+		else
+			new_peak[led_index] = FALSE;	//Dudoso
 	}
 
-	if (new_peak[RED] == 1 && new_peak[IR] == 1) {
-		flags.beat_detected = true;
+	if (new_peak[RED] ) //Antes se usaban los dos, por que?
+	{
+		flags.beat_detected = TRUE;
 		new_peak[RED] = 0;
 		new_peak[IR] = 0;
-		//cuenta_muestras = 0;
-		Chip_GPIO_SetPinToggle(LPC_GPIO, STATE_PORT, STATE_PIN);
+		flags.beat_detected = TRUE;
 	}
-//	if (flags.beat_detected){
-//		cuenta_muestras++;
-//	}
-
-
-//	if(new_peak == 1 && pos_peak >= MAX_WINDOW){ // TODO Pensar, sacar afuera de la
-//		flags.beat_detected = true;
-//		new_peak = 0;
-//	}
 
 	pulse[RED].pos_Dmax++;
 	pulse[IR].pos_Dmax++;

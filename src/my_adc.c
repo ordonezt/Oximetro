@@ -17,20 +17,17 @@ void initADC(void)
 	RingBuffer_Init(&RingBuffADC[RED], &ADC_Buffer[RED], sizeof(ADC_Buffer[RED][0]), BUFFER_LENGTH);
 	RingBuffer_Init(&RingBuffADC[IR], &ADC_Buffer[IR], sizeof(ADC_Buffer[IR][0]), BUFFER_LENGTH);
 
-	Chip_IOCON_PinMux(LPC_IOCON, ADC_PORT, ADC_PIN, IOCON_MODE_INACT, IOCON_FUNC1);
+	Chip_IOCON_PinMux(LPC_IOCON, ADC_PORT, ADC_PIN, IOCON_MODE_INACT, FUNC);
 
 	Chip_Clock_SetPCLKDiv(SYSCTL_PCLK_ADC,SYSCTL_CLKDIV_8);
 	Chip_ADC_Init(LPC_ADC, &ADCSetup);
 
-	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH0, ENABLE);
-	Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH0, ENABLE);
+	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH, ENABLE);
+	Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH, ENABLE);
 
-	Chip_ADC_SetSampleRate(LPC_ADC, &ADCSetup, SAMPLE_RATE_HZ);
-
-//	LPC_ADC->CR = LPC_ADC->CR & (~ADC_SAMPLE_RATE_CONFIG_MASK);
-//	LPC_ADC->CR |= ADC_CR_CLKDIV(737);
-
-	Chip_ADC_SetBurstCmd(LPC_ADC, ENABLE);
+//	Chip_ADC_SetSampleRate(LPC_ADC, &ADCSetup, SAMPLE_RATE_HZ);
+//
+//	Chip_ADC_SetBurstCmd(LPC_ADC, ENABLE);
 
 	/* Enable ADC Interrupt */
 
@@ -41,12 +38,12 @@ void ADC_IRQHandler(void){
 	uint16_t data;
 	static uint8_t count = 0;
 
-	Chip_ADC_ReadValue(LPC_ADC, ADC_CH0, &data);
+	Chip_ADC_ReadValue(LPC_ADC, ADC_CH, &data);
 
-	if(count){
+//	if(count){
 		flags.adc_buffer_error = !RingBuffer_Insert(&RingBuffADC[led], &data);
 
 		toggleLed();
-	}
-	count = !count;
+//	}
+//	count = !count;
 }

@@ -11,6 +11,8 @@
 //----------------------------------CONSTANTES----------------------------------
 #define BUFFER_HEIGHT	2
 #define BUFFER_LENGTH 	512 //2^9 la razon de este tamaño es que tiene que ser potencia de dos para que anden las funciones de ring buffer
+							//TODO VER SI SE PUEDE HACER MAS CHICO
+
 //#define BUFFER_LENGTH 	400	//2 seg de span
 							//Tamaño del buffer 2*400*2B = 1,6 KB
 

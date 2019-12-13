@@ -14,6 +14,7 @@
 #define DEBOUNCE_TICKS		1
 #define UART_TX_TICKS 		1
 #define DISPLAY_TICKS		100
+#define BEAT_TICKS			30
 #define BLINK_TICKS			1000
 #define CHECK_FINGER_TICKS 	1000
 

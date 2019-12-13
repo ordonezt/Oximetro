@@ -19,9 +19,12 @@ void initGpio(void)
 	//Pin salida para estado P0.22
 	Chip_IOCON_PinMuxSet(LPC_IOCON, STATE_PORT, STATE_PIN, IOCON_FUNC0);
 	Chip_GPIO_WriteDirBit(LPC_GPIO, STATE_PORT, STATE_PIN, TRUE);
+	Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);
+
 	//Pin salida para blink P3.26
 	Chip_IOCON_PinMuxSet(LPC_IOCON, BLINK_PORT, BLINK_PIN, IOCON_FUNC0);
 	Chip_GPIO_WriteDirBit(LPC_GPIO, BLINK_PORT, BLINK_PIN, TRUE);
+	Chip_GPIO_SetPinOutHigh(LPC_GPIO, BLINK_PORT, BLINK_PIN);
 
 	//Entradas
 	Chip_IOCON_PinMuxSet(LPC_IOCON, BTN_PORT, BTN_PIN, IOCON_FUNC0 | IOCON_MODE_PULLUP);
@@ -29,6 +32,16 @@ void initGpio(void)
 
 	Chip_IOCON_PinMuxSet(LPC_IOCON, DC_LEVEL_PORT, DC_LEVEL_PIN, IOCON_FUNC0 | IOCON_MODE_PULLUP);
 	Chip_GPIO_WriteDirBit(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN, FALSE);
+
+	//Configuro pines de los leds como gpio
+	Chip_GPIO_WriteDirBit(LPC_GPIO, RED_PORT, RED_PIN, TRUE);
+	Chip_GPIO_WriteDirBit(LPC_GPIO, IR_PORT, IR_PIN, TRUE);
+
+	Chip_IOCON_PinMuxSet(LPC_IOCON, RED_PORT, RED_PIN, IOCON_FUNC0);
+	Chip_IOCON_PinMuxSet(LPC_IOCON, IR_PORT, IR_PIN, IOCON_FUNC0);
+
+	Chip_GPIO_SetPinState(LPC_GPIO, RED_PORT, RED_PIN, FALSE);
+	Chip_GPIO_SetPinState(LPC_GPIO, IR_PORT, IR_PIN, FALSE);
 }
 
 void setLedState(bool state)

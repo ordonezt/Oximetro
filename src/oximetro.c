@@ -7,16 +7,6 @@
  Description : main definition
 ===============================================================================
 */
-/*
- * TODO:
- * 		-Inicializar bien
- * 		-Hacer las maquinas con punteros a funcion
- * 		-Seguir pensando mejor forma de chequear si hay dedo
- * 			Lo ideal es medir con ADC2 y ver si es cerca de 5V, pero complica la logica, por simplicidad lo hago con entrada digital
- * 		-Pantalla o displays
- * 		-PROBARLO
- */
-
 #include "my_include.h"
 
 volatile flags_t flags = {0};
@@ -33,11 +23,15 @@ int main(void) {
 
     statePwr_t power_state = AWAKE;
 
-    static uint32_t debounceTick = 0, displayTick = 0, blinkTick = 0, uartTxTick = 0, checkFingerTick = 0;
+    static uint32_t beatTick = 0, debounceTick = 0, displayTick = 0, uartTxTick = 0, checkFingerTick = 0;
 
-    pulse_t pulsos[BUFFER_HEIGHT];
+    pulse_t pulsos[BUFFER_HEIGHT] = {0};
 
     initSystem();
+
+#ifdef TEST
+    static uint32_t blinkTick = 0;
+#endif
 
     while(1)
     {
@@ -56,7 +50,12 @@ int main(void) {
 					RingBuffer_Pop(&RingBuffADC[IR], &pulsos[IR].muestra);
 					process(pulsos);
 				}
-
+				if(flags.beat_detected)
+				{
+					flags.beat_detected = FALSE;
+					Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);	//Prende led
+					beatTick = tick;
+				}
 				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
 				{
 					button.wasRelease = false;
@@ -65,6 +64,8 @@ int main(void) {
 					setLedState(SLEEP);
 				}
 
+				if(tick - beatTick >= BEAT_TICKS)
+					Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);	//Apaga led
 				if(tick - checkFingerTick >= CHECK_FINGER_TICKS)
 				{
 					checkFingerTick += CHECK_FINGER_TICKS;
@@ -83,11 +84,13 @@ int main(void) {
 					displayTick = tick;
 					updateDisplay();
 				}
+#ifdef TEST
 				if(tick - blinkTick >= BLINK_TICKS)
 				{
 					blinkTick = tick;
 					Chip_GPIO_SetPinToggle(LPC_GPIO, BLINK_PORT, BLINK_PIN);
 				}
+#endif
 				break;
 			case SLEEP:
 				goToSleep();
@@ -108,10 +111,3 @@ int main(void) {
     }
     return 0 ;
 }
-
-//Considerar manejar el ADC con el systick, por que esta interrumpiendo demasiado al pedo
-//Y aparte el procesamiento de process es zarpado
-/*FIXED
- * Temporizacion
- *
- */
