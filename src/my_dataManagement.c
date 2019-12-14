@@ -15,7 +15,7 @@ const uint8_t A = 110;
 const uint8_t B = 25;
 
 float raw[BUFFER_HEIGHT][N_RAW] = {0};
-float smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
+float smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0,0};
 float gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 
 volatile uint8_t cuenta_muestras = 0;
@@ -47,7 +47,7 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 		//obtain signal's derivative
 		shiftBuffer(gradient[led_index], N_GRADIENT);
 		//se filtró el gradiente también
-		gradient[led_index][0] = filter((float)(smooth[led_index][0] - smooth[led_index][2]), h, taps_grad[led_index], N_RAW);//remember the derivative is shifted by 1 sample
+		gradient[led_index][0] = smooth[led_index][0] - smooth[led_index][2];//filter((float)(smooth[led_index][0] - smooth[led_index][2]), h, taps_grad[led_index], N_RAW);//remember the derivative is shifted by 1 sample
 
 		//check for derivative peak(rising edge)
 		for(i = 1, aux = gradient[led_index][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
