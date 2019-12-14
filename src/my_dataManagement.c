@@ -7,14 +7,6 @@
 
 #include "my_include.h"
 
-#define PROM_R 0
-#define PROM_SPO2 1
-#define PROM PROM_R
-
-float freq = 0;
-float bpm = 0;
-uint32_t deltaN=0;
-
 extern RINGBUFF_T txring;
 
 RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
@@ -28,6 +20,7 @@ float gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
 
 volatile uint8_t cuenta_muestras = 0;
 uint8_t pos_peak[2] = {0,0};
+uint32_t cuenta_impresas = 0;
 
 void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY DE *pulse y calculamos frecuencia de pulso y oxigeno y dejamos en globales
 {
@@ -42,11 +35,19 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 	{
 		//filter raw signal
 		shiftBuffer(smooth[led_index], N_SMOOTH);
-		smooth[led_index][0] = filter((float)pulse[led_index].muestra, h, taps[led_index], N_RAW);
+		if ((pulse[led_index].muestra-smooth[led_index][1]) < 1000 || smooth[led_index][1] == 0)
+		{
+			smooth[led_index][0] = filter((float)pulse[led_index].muestra, h, taps[led_index], N_RAW);
+		}
+		else
+		{
+			smooth[led_index][0]=smooth[led_index][1];
+		}
 
 		//obtain signal's derivative
 		shiftBuffer(gradient[led_index], N_GRADIENT);
-		gradient[led_index][0] = smooth[led_index][0] - smooth[led_index][2];//remember the derivative is shifted by 1 sample
+		//se filtró el gradiente también
+		gradient[led_index][0] = filter((float)(smooth[led_index][0] - smooth[led_index][2]), h, taps_grad[led_index], N_RAW);//remember the derivative is shifted by 1 sample
 
 		//check for derivative peak(rising edge)
 		for(i = 1, aux = gradient[led_index][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
@@ -60,24 +61,23 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 		if(pos_aux != pulse[led_index].pos_Dmax)
 		{
 			new_peak[led_index] = TRUE;
-			deltaN=pulse[led_index].pos_Dmax-pos_aux;
-			bpm = 60000 / (deltaN * SAMPLE_PERIOD);
+			pulse[led_index].Delta = pulse[led_index].pos_Dmax-pos_aux;
 			pulse[led_index].pos_Dmax = pos_aux;
 		}
 		else
 			new_peak[led_index] = FALSE;	//Dudoso
 	}
 
-	if (new_peak[RED] ) //Antes se usaban los dos, por que?
+	if (new_peak[RED] && new_peak[IR]) //Antes se usaban los dos, por que?
 	{
 		flags.beat_detected = TRUE;
-		new_peak[RED] = 0;
-		new_peak[IR] = 0;
-		flags.beat_detected = TRUE;
+		new_peak[RED] = FALSE;
+		new_peak[IR] = FALSE;
 	}
 
 	pulse[RED].pos_Dmax++;
 	pulse[IR].pos_Dmax++;
+	cuenta_impresas++;
 }
 
 void get_min_max_values(pulse_t *Data[]){
@@ -136,46 +136,6 @@ uint8_t checkFinger(void)
 
 //	flags.is_finger = true;
 	return TRUE;
-}
-
-uint8_t calculateSpO2(pulse_t *Data[])
-{
-	uint8_t i = 0;
-
-#if(PROM == PROM_R)
-
-	float R = 0;
-	uint8_t SpO2 = 0;
-
-	for(i = 0; i < N_PROM; i++)
-		R += log10(Data[RED]->Max[i] / Data[RED]->Min[i]) / log10(Data[IR]->Max[i] / Data[IR]->Min[i]);
-
-	R = (R / N_PROM);
-
-	SpO2 = A - (B * R);
-
-#endif
-
-#if(PROM == PROM_SPO2)
-
-	float R = 0;
-	uint16_t SpO2 = 0;
-
-		for(i = 0; i < SAMPLES_LENGTH; i++)
-	{
-		R = log10(MAX[RED][i] / MIN[RED][i]) / log10(MAX[IR][i] / MIN[IR][i]);
-		SpO2 += A - (B * R);
-	}
-
-	SpO2 /= SAMPLES_LENGTH;
-#endif
-
-	return SpO2;
-}
-
-uint8_t calculateBPM(void)
-{
-	return 60000 / (deltaN * SAMPLE_PERIOD);
 }
 
 void shiftBuffer(float *buffer, uint16_t length)

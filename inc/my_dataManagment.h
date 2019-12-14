@@ -37,6 +37,7 @@ typedef struct {
 	float Max[N_PROM];
 	float Min[N_PROM];
 	uint8_t pos_Dmax;
+	uint8_t Delta;
 } pulse_t;
 
 //-----------------------------------EXTERNAS-----------------------------------
@@ -53,7 +54,6 @@ extern RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
 //-----------------------------------PROTOTIPOS----------------------------------
 uint8_t checkFinger(void);
 uint8_t calculateSpO2(pulse_t *Data[]);
-uint8_t calculateBPM(void);
 void shiftBuffer(float *buffer, uint16_t length);
 void get_min_max_values(pulse_t *Data[]);
 void process(pulse_t *pulse);

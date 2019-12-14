@@ -35,15 +35,18 @@ void initADC(void)
 }
 
 void ADC_IRQHandler(void){
+//	static uint16_t data_old[2];
 	uint16_t data;
-	static uint8_t count = 0;
-
+	//static uint8_t count = 0;
 	Chip_ADC_ReadValue(LPC_ADC, ADC_CH, &data);
-
+//
+//	if(data-data_old[led]>500)
+//		data = aux;
 //	if(count){
 		flags.adc_buffer_error = !RingBuffer_Insert(&RingBuffADC[led], &data);
 
 		toggleLed();
+
 //	}
 //	count = !count;
 }

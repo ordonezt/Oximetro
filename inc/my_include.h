@@ -27,6 +27,7 @@
 #include "my_uart.h"
 #include "my_OLED.h"
 #include "filters.h"
+#include "my_measure.h"
 
 #define MAX_NO_FINGER_TIME 7
 

@@ -14,6 +14,9 @@ volatile flags_t flags = {0};
 SPI_CONFIG_FORMAT_T spi_format;
 SPI_DATA_SETUP_T spi_xf;
 
+float bpm = 0;
+float spo2 = 0;
+
 int main(void) {
 
 #if defined (__USE_LPCOPEN)
@@ -55,6 +58,7 @@ int main(void) {
 					flags.beat_detected = FALSE;
 					Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);	//Prende led
 					beatTick = tick;
+					Calculate(pulsos);
 				}
 				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
 				{

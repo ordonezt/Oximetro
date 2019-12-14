@@ -37,14 +37,14 @@ extern FontDef Font_16x26;
 #define SSD1306_DC_Port         0
 #endif
 #ifndef SSD1306_DC_Pin
-#define SSD1306_DC_Pin          25
+#define SSD1306_DC_Pin          7
 #endif
 
 #ifndef SSD1306_Reset_Port
 #define SSD1306_Reset_Port      0
 #endif
 #ifndef SSD1306_Reset_Pin
-#define SSD1306_Reset_Pin       24
+#define SSD1306_Reset_Pin       6
 #endif
 
 /* ^^^ SPI config ^^^ */
