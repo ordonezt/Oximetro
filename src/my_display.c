@@ -13,7 +13,9 @@ extern uint32_t cuenta_impresas;
 extern float bpm;
 extern float spo2;
 
-#define ASDF 1
+extern pulse_t pulsos[BUFFER_HEIGHT] = {0};
+
+#define ASDF 5
 
 
 void updateDisplay(void) {
@@ -32,7 +34,7 @@ void updateDisplay(void) {
 	uint32_t i,j;
 	char str[10];
 
-	for(i=1;i<=cuenta_impresas;i++,i++)
+	for(i=1;i<=cuenta_impresas;i++)
 	{
 		if(!par){
 			for(j=0; j<SSD1306_HEIGHT; j++)
@@ -71,6 +73,9 @@ void updateDisplay(void) {
 
 	}
 	cuenta_impresas=0;
+
+	for(j=25; j<SSD1306_HEIGHT; j++)
+			OLED_DrawPixel(x-pulsos[IR].pos_Dmax/ASDF,j,White);
 
 	OLED_SetCursor(0, 0);
 	OLED_WriteString("Freq=",Font_7x10,White);

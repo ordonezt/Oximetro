@@ -68,7 +68,7 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 			new_peak[led_index] = FALSE;	//Dudoso
 	}
 
-	if (new_peak[RED] && new_peak[IR]) //Antes se usaban los dos, por que?
+	if (new_peak[RED]) //Antes se usaban los dos, por que?
 	{
 		flags.beat_detected = TRUE;
 		new_peak[RED] = FALSE;
