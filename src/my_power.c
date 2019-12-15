@@ -11,6 +11,7 @@ void goToSleep(void)
 	Sleeping = TRUE;
 	/*TODO seccion 4.8 manual lpc*/
 
+	turnOffDisplay();
 	//Apagar ADC
 	//Poner puertos como entradas pull down
 	initExtInt();

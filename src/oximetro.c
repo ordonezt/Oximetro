@@ -17,6 +17,8 @@ SPI_DATA_SETUP_T spi_xf;
 float bpm = 0;
 float spo2 = 0;
 
+pulse_t pulsos[BUFFER_HEIGHT] = {0};
+
 int main(void) {
 
 #if defined (__USE_LPCOPEN)
@@ -28,7 +30,7 @@ int main(void) {
 
     static uint32_t beatTick = 0, debounceTick = 0, displayTick = 0, uartTxTick = 0, checkFingerTick = 0;
 
-    pulse_t pulsos[BUFFER_HEIGHT] = {0};
+
 
     initSystem();
 
@@ -100,6 +102,11 @@ int main(void) {
 				goToSleep();
 				//Si llegue aca es por que desperte, voy a estado normal
 				while(power_state == SLEEP){
+					if(tick - debounceTick >= DEBOUNCE_TICKS)
+					{
+						debounceTick = tick;
+						debounce();
+					}
 					//Espero a que suelte el boton aca, porque si no vuelvo a dormir
 					if(button.wasRelease == TRUE){
 						button.wasRelease = FALSE;

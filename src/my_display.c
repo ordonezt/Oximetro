@@ -7,13 +7,12 @@
 
 
 #include "my_include.h"
-#include "my_OLED.h"
 
 extern uint32_t cuenta_impresas;
 extern float bpm;
 extern float spo2;
 
-extern pulse_t pulsos[BUFFER_HEIGHT] = {0};
+extern pulse_t pulsos[BUFFER_HEIGHT];
 
 #define ASDF 5
 
@@ -88,4 +87,10 @@ void updateDisplay(void) {
 
 	OLED_UpdateScreen();
 
+}
+
+void turnOffDisplay(void)
+{
+	OLED_Fill(Black);
+	OLED_UpdateScreen();
 }
