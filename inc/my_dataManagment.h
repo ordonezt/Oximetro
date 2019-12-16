@@ -53,9 +53,8 @@ extern RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
 
 //-----------------------------------PROTOTIPOS----------------------------------
 uint8_t checkFinger(void);
-uint8_t calculateSpO2(pulse_t *Data[]);
 void shiftBuffer(float *buffer, uint16_t length);
-void get_min_max_values(pulse_t *Data[]);
+void get_min_max_values(pulse_t *pulse);
 void process(pulse_t *pulse);
 
 #endif /* MY_DATAMANAGMENT_H_ */

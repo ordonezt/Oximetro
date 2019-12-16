@@ -14,7 +14,8 @@
 
 void Calculate(pulse_t*);
 uint8_t calculateBPM(uint8_t);
-uint8_t calculateSpO2(pulse_t *Data[]);
+uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr);
 uint8_t Average(uint8_t*, uint8_t);
 
 extern float bpm;
+extern float spo2;

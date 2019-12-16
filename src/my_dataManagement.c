@@ -73,6 +73,7 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 		flags.beat_detected = TRUE;
 		new_peak[RED] = FALSE;
 		new_peak[IR] = FALSE;
+		get_min_max_values(pulse);
 	}
 
 	pulse[RED].pos_Dmax++;
@@ -80,13 +81,13 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 	cuenta_impresas++;
 }
 
-void get_min_max_values(pulse_t *Data[]){
+void get_min_max_values(pulse_t pulse[2]){
 	led_t led_local;
 	uint16_t i, min, max, pos_Dmax;
 
 	for (led_local = RED; led_local <= IR; led_local++) {
 
-		pos_Dmax = Data[led_local]->pos_Dmax;
+		pos_Dmax = pulse[led_local].pos_Dmax;
 
 		min = smooth[led_local][pos_Dmax];
 
@@ -102,11 +103,11 @@ void get_min_max_values(pulse_t *Data[]){
 				max = smooth[led_local][i];
 		}
 
-		shiftBuffer(Data[led_local]->Max, N_PROM);
-		shiftBuffer(Data[led_local]->Min, N_PROM);
+		shiftBuffer(pulse[led_local].Max, N_PROM);
+		shiftBuffer(pulse[led_local].Min, N_PROM);
 
-		Data[led_local]->Min[0] = min;
-		Data[led_local]->Max[0] = max;
+		pulse[led_local].Min[0] = min;
+		pulse[led_local].Max[0] = max;
 	}
 }
 //
