@@ -16,17 +16,17 @@ uint8_t calculateBPM(uint8_t deltaN)
 	static uint8_t memory[NUMBER_OF_BPMS];
 	static uint8_t index = 0;
 	uint8_t new;
-	uint8_t bp = bpm;
+//	uint8_t bp = bpm;
 
 	new = 60000 / (deltaN * SAMPLE_PERIOD);
 
 	if(new < MAX_BPM_ACEPTED && new >= MIN_BPM_ACEPTED) {
-//		memory[index] = new;
-//		index++;
-//		index %= NUMBER_OF_BPMS;
-		bp = new;
+		memory[index] = new;
+		index++;
+		index %= NUMBER_OF_BPMS;
+//		bp = new;
 	}
-	return bp; //Average(memory, NUMBER_OF_BPMS);
+	return Average(memory, NUMBER_OF_BPMS);
 }
 
 uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr)

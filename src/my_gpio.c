@@ -51,8 +51,10 @@ void setLedState(bool state)
 
 void toggleLed(void)
 {
+	__disable_irq();
 	led = !led;
 	setLed(led);
+	__enable_irq();
 }
 
 void debounce(void)

@@ -220,7 +220,7 @@ void setLed(led_t led)
 
 	else
 	{
-		Chip_GPIO_SetPinState(LPC_GPIO, IR_PORT, IR_PIN, false);
 		Chip_GPIO_SetPinState(LPC_GPIO, RED_PORT, RED_PIN, true);
+		Chip_GPIO_SetPinState(LPC_GPIO, IR_PORT, IR_PIN, false);
 	}
 }

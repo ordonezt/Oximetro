@@ -49,7 +49,7 @@ int main(void) {
 		switch(power_state)
 		{
 			case AWAKE:
-				while(!RingBuffer_IsEmpty(&RingBuffADC[RED]) && !RingBuffer_IsEmpty(&RingBuffADC[IR]))
+				while(!RingBuffer_IsEmpty(&RingBuffADC[IR]) && !RingBuffer_IsEmpty(&RingBuffADC[RED]))
 				{
 					RingBuffer_Pop(&RingBuffADC[RED], &pulsos[RED].muestra);
 					RingBuffer_Pop(&RingBuffADC[IR], &pulsos[IR].muestra);

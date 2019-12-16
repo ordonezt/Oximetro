@@ -15,7 +15,8 @@ void initSystem(void)
 	initADC();		//Inicializo el ADC
 	initUart();
 	setLedState(AWAKE);
-	setLed(IR);
+	led = IR;
+	setLed(led);
 	initOLED();
 	tick = 0;
 }
