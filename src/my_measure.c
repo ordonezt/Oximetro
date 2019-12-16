@@ -7,8 +7,8 @@
 #include "my_include.h"
 
 void Calculate(pulse_t *pulse) {
-	bpm = calculateBPM(pulse[RED].Delta);
-	spo2 = calculateSpO2(pulse[RED], pulse[IR]);
+	bpm = calculateBPM(pulse->Delta);
+	//spo2 = calculateSpO2(pulse[RED], pulse[IR]);
 }
 
 uint8_t calculateBPM(uint8_t deltaN)
@@ -16,7 +16,6 @@ uint8_t calculateBPM(uint8_t deltaN)
 	static uint8_t memory[NUMBER_OF_BPMS];
 	static uint8_t index = 0;
 	uint8_t new;
-//	uint8_t bp = bpm;
 
 	new = 60000 / (deltaN * SAMPLE_PERIOD);
 
@@ -24,7 +23,6 @@ uint8_t calculateBPM(uint8_t deltaN)
 		memory[index] = new;
 		index++;
 		index %= NUMBER_OF_BPMS;
-//		bp = new;
 	}
 	return Average(memory, NUMBER_OF_BPMS);
 }

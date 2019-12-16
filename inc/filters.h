@@ -9,8 +9,8 @@
 #define FILTERS_H_
 
 extern const float h[N_RAW];
-extern float taps[BUFFER_HEIGHT][N_RAW];
-extern float taps_grad[BUFFER_HEIGHT][N_RAW];
+extern float taps[N_RAW];
+extern float taps_grad[N_RAW];
 
 float filter(float sample, const float* h, float* taps, uint8_t length);
 

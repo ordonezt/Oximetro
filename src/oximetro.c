@@ -17,7 +17,7 @@ SPI_DATA_SETUP_T spi_xf;
 float bpm = 0;
 float spo2 = 0;
 
-pulse_t pulsos[BUFFER_HEIGHT] = {0};
+pulse_t pulso;
 
 int main(void) {
 
@@ -49,18 +49,17 @@ int main(void) {
 		switch(power_state)
 		{
 			case AWAKE:
-				while(!RingBuffer_IsEmpty(&RingBuffADC[IR]) && !RingBuffer_IsEmpty(&RingBuffADC[RED]))
+				while(!RingBuffer_IsEmpty(&RingBuffADC))
 				{
-					RingBuffer_Pop(&RingBuffADC[RED], &pulsos[RED].muestra);
-					RingBuffer_Pop(&RingBuffADC[IR], &pulsos[IR].muestra);
-					process(pulsos);
+					RingBuffer_Pop(&RingBuffADC, &pulso.muestra);
+					process(&pulso);
 				}
 				if(flags.beat_detected)
 				{
 					flags.beat_detected = FALSE;
 					Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);	//Prende led
 					beatTick = tick;
-					Calculate(pulsos);
+					Calculate(&pulso);
 				}
 				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
 				{

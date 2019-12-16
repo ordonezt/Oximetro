@@ -19,8 +19,8 @@ const float h[N_RAW] =
 		0.038626528332096295,
 };
 
-float taps[BUFFER_HEIGHT][N_RAW] = {0};
-float taps_grad[BUFFER_HEIGHT][N_RAW] = {0};
+float taps[N_RAW] = {0};
+float taps_grad[N_RAW] = {0};
 
 float filter(float sample, const float* h, float* tapsLocal, uint8_t length)
 {

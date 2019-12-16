@@ -45,11 +45,11 @@ extern const uint8_t A;
 extern const uint8_t B;
 extern volatile uint8_t cuenta_muestras;
 
-extern float raw[BUFFER_HEIGHT][N_RAW];
-extern float smooth[BUFFER_HEIGHT][BUFFER_LENGTH];
-extern float gradient[BUFFER_HEIGHT][N_GRADIENT];
+extern float raw[N_RAW];
+extern float smooth[BUFFER_LENGTH];
+extern float gradient[N_GRADIENT];
 
-extern RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
+extern RINGBUFF_T RingBuffADC;
 
 //-----------------------------------PROTOTIPOS----------------------------------
 uint8_t checkFinger(void);

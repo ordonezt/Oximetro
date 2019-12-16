@@ -48,7 +48,7 @@ void graphic(void){
 	int initial = '@';
 	static int cont = 0;
 
-	int frecuencia = (uint8_t) smooth[0][0];
+	int frecuencia = (uint8_t) smooth[0];
 
 	if(!Chip_UART_CheckBusy(UART_Def)){
 		//if(RingBuffer_Pop(&txring, &data)){

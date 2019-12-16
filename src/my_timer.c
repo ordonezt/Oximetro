@@ -20,7 +20,7 @@ void SysTick_Handler(void)
 {
 	 tick++;
 
-	 if(tick%(SAMPLE_PERIOD/2) == 0)					//2 ms
+	 if(tick%(SAMPLE_PERIOD) == 0)					//4 ms
 	 	Chip_ADC_SetStartMode(LPC_ADC, ADC_START_NOW, ADC_TRIGGERMODE_RISING);		//Start conversion
 //	 checkFinger(); Sacar ajuera
 
