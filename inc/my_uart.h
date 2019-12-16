@@ -11,6 +11,7 @@
 #define _UART0_TX_H 1
 
 void initUart(void);
+void UartTransmit(void);
 void graphic(void);
 
 #endif /* MY_UART_H_ */

@@ -11,5 +11,6 @@
 #define NA 	0xFF
 
 void updateDisplay(void);
+void turnOffDisplay(void);
 
 #endif /* MY_DISPLAY_H_ */

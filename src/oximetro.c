@@ -7,22 +7,17 @@
  Description : main definition
 ===============================================================================
 */
-/*
- * TODO:
- * 		-Inicializar bien
- * 		-Hacer las maquinas con punteros a funcion
- * 		-Seguir pensando mejor forma de chequear si hay dedo
- * 			Lo ideal es medir con ADC2 y ver si es cerca de 5V, pero complica la logica, por simplicidad lo hago con entrada digital
- * 		-Pantalla o displays
- * 		-PROBARLO
- */
-
 #include "my_include.h"
 
 volatile flags_t flags = {0};
 
 SPI_CONFIG_FORMAT_T spi_format;
 SPI_DATA_SETUP_T spi_xf;
+
+float bpm = 0;
+float spo2 = 0;
+
+pulse_t pulsos[BUFFER_HEIGHT] = {0};
 
 int main(void) {
 
@@ -32,92 +27,98 @@ int main(void) {
 #endif
 
     statePwr_t power_state = AWAKE;
-    stateWork_t work_state = WAITING;
 
-    pulse_t Red_p;
-    Red_p.Led = RED;
-    pulse_t Ir_p;
-    Ir_p.Led = IR;
-    pulse_t *Data[2] = {&Red_p, &Ir_p};
+    static uint32_t beatTick = 0, debounceTick = 0, displayTick = 0, uartTxTick = 0, checkFingerTick = 0;
+
+
 
     initSystem();
 
+#ifdef TEST
+    static uint32_t blinkTick = 0;
+#endif
+
     while(1)
-    	{
-    		//Primera maquina de estados define el estado de poder /**TODO pasar a vector de punteros a funcion**/
-    		switch(power_state)
-    		{
-    			case AWAKE:
+    {
+    	if(tick - debounceTick >= DEBOUNCE_TICKS)
+		{
+			debounceTick = tick;
+			debounce();
+		}
+    	//Primera maquina de estados define el estado de poder /**TODO pasar a vector de punteros a funcion**/
+		switch(power_state)
+		{
+			case AWAKE:
+				while(!RingBuffer_IsEmpty(&RingBuffADC[IR]) && !RingBuffer_IsEmpty(&RingBuffADC[RED]))
+				{
+					RingBuffer_Pop(&RingBuffADC[RED], &pulsos[RED].muestra);
+					RingBuffer_Pop(&RingBuffADC[IR], &pulsos[IR].muestra);
+					process(pulsos);
+				}
+				if(flags.beat_detected)
+				{
+					flags.beat_detected = FALSE;
+					Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);	//Prende led
+					beatTick = tick;
+					Calculate(pulsos);
+				}
+				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
+				{
+					button.wasRelease = false;
+					flags.no_finger_times = 0;
+					power_state = SLEEP;
+					setLedState(SLEEP);
+				}
 
-    				//Segunda maquina de estados /*TODO pasar a puntero a funcion*/
-    				switch(work_state)
-    				{
-						case WAITING:
-							led = IR;
-		//					display(NA, NA);	/*TODO*/
-							if(flags.is_finger)
-								work_state = WORKING;
-							break;
-						case WORKING:
-							if(flags.conversion_done)
-							{
-								flags.conversion_done = false;
-								process(Data[led]);
-								led = !led;
-								setLed(led);
-							}
-							if(flags.beat_detected)
-							{
-								if (cuenta_muestras > MAX_WINDOW) {
-									flags.beat_detected = false;
-									cuenta_muestras = 0;
-
-									get_min_max_values(Data);
-									// obtenemos R
-									// obtenemos Pulsos
-			            //display(calculateSpO2(Data), calculateBPM());
-								}
-
-							}
-							if(!flags.is_finger)
-							{
-								led = IR;
-								setLed(led);
-								work_state = WAITING;
-							}
-							break;
-						default:
-							work_state = WAITING;
-							break;
-						}
-
-						if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
-						{
-							button.wasRelease = false;
-							flags.no_finger_times = 0;
-							power_state = SLEEP;
-							setLedState(SLEEP);
-						}
-						break;
-
-					case SLEEP:
-						goToSleep();
-						//Si llegue aca es por que desperte, voy a estado normal
-						while(power_state == SLEEP){
-							//Espero a que suelte el boton aca, por que si no vuelvo a dormir
-							if(button.wasRelease == true){
-								button.wasRelease = false;
-								power_state = AWAKE;
-								work_state = WAITING;
-								setLedState(AWAKE);
-							}
-						}
-						break;
-
-					default:
+				if(tick - beatTick >= BEAT_TICKS)
+					Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);	//Apaga led
+				if(tick - checkFingerTick >= CHECK_FINGER_TICKS)
+				{
+					checkFingerTick += CHECK_FINGER_TICKS;
+					if(!checkFinger())
+						flags.no_finger_times++;
+					else
+						flags.no_finger_times = 0;
+				}
+				if(tick - uartTxTick >= UART_TX_TICKS)
+				{
+					uartTxTick = tick;
+					UartTransmit();
+				}
+				if(tick - displayTick >= DISPLAY_TICKS)
+				{
+					displayTick = tick;
+					updateDisplay();
+				}
+#ifdef TEST
+				if(tick - blinkTick >= BLINK_TICKS)
+				{
+					blinkTick = tick;
+					Chip_GPIO_SetPinToggle(LPC_GPIO, BLINK_PORT, BLINK_PIN);
+				}
+#endif
+				break;
+			case SLEEP:
+				goToSleep();
+				//Si llegue aca es por que desperte, voy a estado normal
+				while(power_state == SLEEP){
+					if(tick - debounceTick >= DEBOUNCE_TICKS)
+					{
+						debounceTick = tick;
+						debounce();
+					}
+					//Espero a que suelte el boton aca, porque si no vuelvo a dormir
+					if(button.wasRelease == TRUE){
+						button.wasRelease = FALSE;
 						power_state = AWAKE;
-						break;
-    		}
-    	}
+						setLedState(AWAKE);
+					}
+				}
+				break;
+			default:
+				power_state = AWAKE;
+				break;
+		}
+    }
     return 0 ;
 }

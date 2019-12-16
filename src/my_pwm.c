@@ -212,18 +212,6 @@ void PWM_TurnOn(void)
 
 void setLed(led_t led)
 {
-//	if(led == IR)
-//	{
-//		Chip_PWM_OutputEnable(IR_PWM, ENABLE);
-//		Chip_PWM_OutputEnable(RED_PWM, DISABLE);
-//	}
-//
-//	else
-//	{
-//		Chip_PWM_OutputEnable(IR_PWM, DISABLE);
-//		Chip_PWM_OutputEnable(RED_PWM, ENABLE);
-//	}
-//
 	if(led == IR)
 	{
 		Chip_GPIO_SetPinState(LPC_GPIO, IR_PORT, IR_PIN, true);
@@ -232,7 +220,7 @@ void setLed(led_t led)
 
 	else
 	{
-		Chip_GPIO_SetPinState(LPC_GPIO, IR_PORT, IR_PIN, false);
 		Chip_GPIO_SetPinState(LPC_GPIO, RED_PORT, RED_PIN, true);
+		Chip_GPIO_SetPinState(LPC_GPIO, IR_PORT, IR_PIN, false);
 	}
 }

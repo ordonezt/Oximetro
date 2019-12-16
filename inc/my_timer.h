@@ -11,6 +11,15 @@
 #define TICKRATE_HZ1 	1000 //1000 Hz => 1ms
 #define SAMPLE_PERIOD 	4 //2ms
 
+#define DEBOUNCE_TICKS		1
+#define UART_TX_TICKS 		1
+#define DISPLAY_TICKS		100
+#define BEAT_TICKS			30
+#define BLINK_TICKS			1000
+#define CHECK_FINGER_TICKS 	1000
+
+extern uint32_t tick;
+
 void initTimer(void);
 
 #endif /* MY_TIMER_H_ */

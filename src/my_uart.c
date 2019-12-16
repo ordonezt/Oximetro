@@ -34,9 +34,17 @@ void initUart(void){
 	Chip_UART_SetupFIFOS(UART_Def, (UART_FCR_FIFO_EN | UART_FCR_RX_RS |	UART_FCR_TX_RS | UART_FCR_TRG_LEV2));
 }
 
+void UartTransmit(void)
+{
+	uint8_t data;
+	if(!Chip_UART_CheckBusy(UART_Def))
+		if(RingBuffer_Pop(&txring, &data))
+			Chip_UART_SendByte(UART_Def, data);
+}
+
 void graphic(void){
 
-	uint32_t data;
+	//uint32_t data;
 	int initial = '@';
 	static int cont = 0;
 

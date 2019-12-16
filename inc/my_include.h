@@ -26,6 +26,8 @@
 #include "my_twi.h"
 #include "my_uart.h"
 #include "my_OLED.h"
+#include "filters.h"
+#include "my_measure.h"
 
 #define MAX_NO_FINGER_TIME 7
 
@@ -41,7 +43,8 @@ typedef struct		//Estructura para manejo de flags del sistema
 	uint16_t conversion_done:1;
 	uint16_t beat_detected:1;
 	uint16_t no_finger_times:3;
-	uint16_t RESERVED:7;
+	uint16_t adc_buffer_error:1;
+	uint16_t RESERVED:6;
 }flags_t;
 
 extern volatile flags_t flags;

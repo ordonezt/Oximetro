@@ -8,34 +8,45 @@
 
 #include "my_include.h"
 
-static ADC_CLOCK_SETUP_T ADCSetup;
+uint16_t ADC_Buffer[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
 
 void initADC(void)
 {
-	Chip_IOCON_PinMux(LPC_IOCON, ADC_PORT, ADC_PIN, IOCON_MODE_INACT, IOCON_FUNC1);
+	static ADC_CLOCK_SETUP_T ADCSetup;
 
+	RingBuffer_Init(&RingBuffADC[RED], &ADC_Buffer[RED], sizeof(ADC_Buffer[RED][0]), BUFFER_LENGTH);
+	RingBuffer_Init(&RingBuffADC[IR], &ADC_Buffer[IR], sizeof(ADC_Buffer[IR][0]), BUFFER_LENGTH);
+
+	Chip_IOCON_PinMux(LPC_IOCON, ADC_PORT, ADC_PIN, IOCON_MODE_INACT, FUNC);
+
+	Chip_Clock_SetPCLKDiv(SYSCTL_PCLK_ADC,SYSCTL_CLKDIV_8);
 	Chip_ADC_Init(LPC_ADC, &ADCSetup);
 
-	/* Enable ADC Interrupt */
-	NVIC_EnableIRQ(ADC_IRQn);
+	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH, ENABLE);
+	Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH, ENABLE);
 
-	Chip_ADC_EnableChannel(LPC_ADC, ADC_CH0, ENABLE);
-	Chip_ADC_Int_SetChannelCmd(LPC_ADC, ADC_CH0, ENABLE);
+//	Chip_ADC_SetSampleRate(LPC_ADC, &ADCSetup, SAMPLE_RATE_HZ);
+//
+//	Chip_ADC_SetBurstCmd(LPC_ADC, ENABLE);
+
+	/* Enable ADC Interrupt */
+
+	NVIC_EnableIRQ(ADC_IRQn);
 }
 
 void ADC_IRQHandler(void){
+//	static uint16_t data_old[2];
 	uint16_t data;
+	//static uint8_t count = 0;
+	Chip_ADC_ReadValue(LPC_ADC, ADC_CH, &data);
+//
+//	if(data-data_old[led]>500)
+//		data = aux;
+//	if(count){
+		flags.adc_buffer_error = !RingBuffer_Insert(&RingBuffADC[led], &data);
 
-	Chip_ADC_ReadValue(LPC_ADC, ADC_CH0, &data);
+		toggleLed();
 
-	//Solo entro si ya lei el dato anterior
-	if(!flags.conversion_done)
-	{
-		flags.conversion_done = true;
-
-		//get raw signal
-		shiftBuffer(raw[led], N_RAW);
-
-		raw[led][0] = data;
-	}
+//	}
+//	count = !count;
 }
