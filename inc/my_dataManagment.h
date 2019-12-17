@@ -21,7 +21,7 @@
 #define N_SMOOTH BUFFER_LENGTH
 
 #define N_FINGER	10
-#define THRESHOLD	100		//TODO
+#define THRESHOLD	1000		//TODO
 #define DC_LEVEL	500		//TODO
 
 #define MAX_WINDOW 10   // TODO ALCANZA???
@@ -52,7 +52,7 @@ extern float gradient[N_GRADIENT];
 extern RINGBUFF_T RingBuffADC;
 
 //-----------------------------------PROTOTIPOS----------------------------------
-uint8_t checkFinger(void);
+void checkFinger(void);
 void shiftBuffer(float *buffer, uint16_t length);
 void get_min_max_values(pulse_t *pulse);
 void process(pulse_t *pulse);

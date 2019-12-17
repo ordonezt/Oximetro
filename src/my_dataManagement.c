@@ -24,9 +24,9 @@ uint32_t cuenta_impresas = 0;
 
 void process(pulse_t *pulse) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY DE *pulse y calculamos frecuencia de pulso y oxigeno y dejamos en globales
 {
-	static uint8_t new_peak = 0;
-
-	uint8_t i, pos_aux = 0;
+	static uint8_t count = 0;
+	uint16_t Delta_viejo = 0;
+	uint16_t i, pos_aux = 0;
 
 	float aux = 0;
 
@@ -57,18 +57,9 @@ void process(pulse_t *pulse) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY
 
 	if((pulse->pos_Dmax - pos_aux) > 100)
 	{
-		new_peak = TRUE;
 		pulse->Delta = pulse->pos_Dmax-pos_aux;
 		pulse->pos_Dmax = pos_aux;
-	}
-	else
-		new_peak = FALSE;	//Dudoso
-
-	if (new_peak) //Antes se usaban los dos, por que?
-	{
 		flags.beat_detected = TRUE;
-		new_peak = FALSE;
-		//get_min_max_values(pulse);
 	}
 
 	pulse->pos_Dmax++;
@@ -107,13 +98,14 @@ void get_min_max_values(pulse_t *pulse){
 //
 //}
 
-uint8_t checkFinger(void)
+void checkFinger(void)
 {
+	flags.is_finger = true;
 //	uint8_t i;
 //	float aux = 0;
 //
 //	for(i = 0; i < N_FINGER; i++)
-//		aux += abs(smooth[IR][i] - DC_LEVEL);
+//		aux += smooth[i];
 //
 //	aux /= N_FINGER;
 //
@@ -122,13 +114,6 @@ uint8_t checkFinger(void)
 //	else
 //		flags.is_finger = false;
 //	return aux > THRESHOLD;
-
-
-//	flags.is_finger = !Chip_GPIO_GetPinState(LPC_GPIO, DC_LEVEL_PORT, DC_LEVEL_PIN); //Dedo 0, sin dedo 1
-
-
-//	flags.is_finger = true;
-	return TRUE;
 }
 
 void shiftBuffer(float *buffer, uint16_t length)

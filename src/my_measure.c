@@ -14,17 +14,32 @@ void Calculate(pulse_t *pulse) {
 uint8_t calculateBPM(uint8_t deltaN)
 {
 	static uint8_t memory[NUMBER_OF_BPMS];
-	static uint8_t index = 0;
+	static uint8_t index = 0, count = 0, prom = 0;
 	uint8_t new;
+	float abs;
 
 	new = 60000 / (deltaN * SAMPLE_PERIOD);
 
-	if(new < MAX_BPM_ACEPTED && new >= MIN_BPM_ACEPTED) {
+	if(count < NUMBER_OF_BPMS){
 		memory[index] = new;
 		index++;
 		index %= NUMBER_OF_BPMS;
+		count++;
+		return 0;
 	}
-	return Average(memory, NUMBER_OF_BPMS);
+
+	if(new > MAX_BPM_ACEPTED && new < MIN_BPM_ACEPTED)
+		return prom;
+
+	//abs = new > prom? new-prom: prom-new;
+	//if(abs < 20) {
+			memory[index] = new;
+			index++;
+			index %= NUMBER_OF_BPMS;
+	//}
+
+	prom = Average(memory, NUMBER_OF_BPMS);
+	return prom;
 }
 
 uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr)

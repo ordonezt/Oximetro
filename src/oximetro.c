@@ -17,6 +17,7 @@ SPI_DATA_SETUP_T spi_xf;
 float bpm = 0;
 float spo2 = 0;
 
+extern uint32_t cuenta_impresas;
 pulse_t pulso;
 
 int main(void) {
@@ -54,7 +55,7 @@ int main(void) {
 					RingBuffer_Pop(&RingBuffADC, &pulso.muestra);
 					process(&pulso);
 				}
-				if(flags.beat_detected)
+				if(flags.beat_detected )
 				{
 					flags.beat_detected = FALSE;
 					Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);	//Prende led
@@ -74,10 +75,14 @@ int main(void) {
 				if(tick - checkFingerTick >= CHECK_FINGER_TICKS)
 				{
 					checkFingerTick += CHECK_FINGER_TICKS;
-					if(!checkFinger())
+					checkFinger();
+					if(!flags.is_finger){
 						flags.no_finger_times++;
-					else
+						cuenta_impresas = 0;
+					}
+					else{
 						flags.no_finger_times = 0;
+					}
 				}
 				if(tick - uartTxTick >= UART_TX_TICKS)
 				{

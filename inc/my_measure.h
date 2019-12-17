@@ -8,9 +8,9 @@
 #define PROM_R 0
 #define PROM_SPO2 1
 #define PROM PROM_R
-#define NUMBER_OF_BPMS 10
-#define MAX_BPM_ACEPTED 300
-#define MIN_BPM_ACEPTED 20
+#define NUMBER_OF_BPMS 7
+#define MAX_BPM_ACEPTED 250
+#define MIN_BPM_ACEPTED 30
 
 void Calculate(pulse_t*);
 uint8_t calculateBPM(uint8_t);

@@ -29,7 +29,7 @@
 #include "filters.h"
 #include "my_measure.h"
 
-#define MAX_NO_FINGER_TIME 7
+#define MAX_NO_FINGER_TIME 20
 
 typedef struct		//Estructura para manejo de flags del sistema
 {
