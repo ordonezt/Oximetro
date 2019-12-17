@@ -14,19 +14,29 @@ void Calculate(pulse_t *pulse) {
 uint8_t calculateBPM(uint8_t deltaN)
 {
 	static uint8_t memory[NUMBER_OF_BPMS];
-	static uint8_t index = 0;
+	static uint8_t index = 0, count = 0, prom = 0;
 	uint8_t new;
-//	uint8_t bp = bpm;
+	float abs;
 
 	new = 60000 / (deltaN * SAMPLE_PERIOD);
 
-	if(new < MAX_BPM_ACEPTED && new >= MIN_BPM_ACEPTED) {
+	if(count < NUMBER_OF_BPMS){
 		memory[index] = new;
 		index++;
 		index %= NUMBER_OF_BPMS;
-//		bp = new;
+		count++;
+		return 0;
 	}
-	return Average(memory, NUMBER_OF_BPMS);
+
+	if(new > MAX_BPM_ACEPTED && new < MIN_BPM_ACEPTED)
+		return prom;
+
+	memory[index] = new;
+	index++;
+	index %= NUMBER_OF_BPMS;
+
+	prom = Average(memory, NUMBER_OF_BPMS);
+	return prom;
 }
 
 uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr)
@@ -36,14 +46,20 @@ uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr)
 #if(PROM == PROM_R)
 
 	float R = 0;
-	uint8_t SpO2 = 0;
+	float sum = 0;
+	uint8_t SpO2 = 0, cont=0;
 
-	for(i = 0; i < N_PROM; i++)
-		R += log10(pulseRed.Max[i] / pulseRed.Min[i]) / log10(pulseIr.Max[i] / pulseIr.Min[i]);
+	for(i = 0; i < N_PROM; i++){
+		R = log10(pulseRed.Max[i] / pulseRed.Min[i]) / log10(pulseIr.Max[i] / pulseIr.Min[i]);
+		if(R > 0.4 && R < 0.8){
+			sum += R;
+			cont++;
+		}
+	}
 
-	R = (R / N_PROM);
+	R = (sum / cont);
 
-	SpO2 = A - (B * R);
+	SpO2 = 110 - (25 * R);
 
 #endif
 

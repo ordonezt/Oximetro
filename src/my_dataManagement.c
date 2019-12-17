@@ -58,14 +58,12 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 			}
 		}
 
-		if(pos_aux != pulse[led_index].pos_Dmax)
+		if((pulse->pos_Dmax - pos_aux) > 125)
 		{
 			new_peak[led_index] = TRUE;
 			pulse[led_index].Delta = pulse[led_index].pos_Dmax-pos_aux;
 			pulse[led_index].pos_Dmax = pos_aux;
 		}
-		else
-			new_peak[led_index] = FALSE;	//Dudoso
 	}
 
 	if (new_peak[RED]) //Antes se usaban los dos, por que?
