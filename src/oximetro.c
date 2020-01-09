@@ -62,6 +62,7 @@ int main(void) {
 					beatTick = tick;
 					Calculate(pulsos);
 				}
+
 				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
 				{
 					button.wasRelease = false;
@@ -72,6 +73,7 @@ int main(void) {
 
 				if(tick - beatTick >= BEAT_TICKS)
 					Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);	//Apaga led
+
 				if(tick - checkFingerTick >= CHECK_FINGER_TICKS)
 				{
 					checkFingerTick += CHECK_FINGER_TICKS;
@@ -80,11 +82,7 @@ int main(void) {
 					else
 						flags.no_finger_times = 0;
 				}
-				if(tick - uartTxTick >= UART_TX_TICKS)
-				{
-					uartTxTick = tick;
-					UartTransmit();
-				}
+
 				if(tick - displayTick >= DISPLAY_TICKS)
 				{
 					displayTick = tick;

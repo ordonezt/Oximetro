@@ -10,104 +10,109 @@
 extern RINGBUFF_T txring;
 
 RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
+RINGBUFF_T RingBuffSmooth[BUFFER_HEIGHT];
 
 const uint8_t A = 110;
 const uint8_t B = 25;
 
-float raw[BUFFER_HEIGHT][N_RAW] = {0};
 float smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
-float gradient[BUFFER_HEIGHT][N_GRADIENT] = {0};
+float ThresholdSup = 0;
+float ThresholdInf = 0;
 
 volatile uint8_t cuenta_muestras = 0;
-uint8_t pos_peak[2] = {0,0};
 uint32_t cuenta_impresas = 0;
 
 void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARRAY DE *pulse y calculamos frecuencia de pulso y oxigeno y dejamos en globales
 {
-	static uint8_t new_peak[2]={0,0};
 	uint8_t led_index;
 
 	uint8_t i, pos_aux = 0;
 
-	float aux = 0;
+	float data;
+	uint32_t indice;
 
 	for (led_index = RED; led_index < 2; led_index++)
 	{
-		//filter raw signal
-		shiftBuffer(smooth[led_index], N_SMOOTH);
-		if ((pulse[led_index].muestra-smooth[led_index][1]) < 1000 || smooth[led_index][1] == 0)
-		{
-			smooth[led_index][0] = filter((float)pulse[led_index].muestra, h, taps[led_index], N_RAW);
-		}
-		else
-		{
-			smooth[led_index][0]=smooth[led_index][1];
-		}
-//		smooth[led_index][0] = filter((float)pulse[led_index].muestra, h, taps[led_index], N_RAW);
-		//obtain signal's derivative
-		shiftBuffer(gradient[led_index], N_GRADIENT);
-		//se filtró el gradiente también
-		gradient[led_index][0] = smooth[led_index][0] - smooth[led_index][2];//filter((float)(smooth[led_index][0] - smooth[led_index][2]), h, taps_grad[led_index], N_RAW);//remember the derivative is shifted by 1 sample
+		data = filter((float)pulse[led_index].muestra, h, taps[led_index], N_RAW);
+		RingBuffer_Insert(&RingBuffSmooth[led], &data);
+	}
 
-		//check for derivative peak(rising edge)
-		for(i = 1, aux = gradient[led_index][0]; i < N_GRADIENT; i++){ //TODO pensar bien logica de pos_aux
-			if(gradient[led_index][i] > aux)
-			{
-				aux = gradient[led_index][i];
-				pos_aux = i;
-			}
+	if(RingBuffer_IsFull(&RingBuffSmooth[RED]) && RingBuffer_IsFull(&RingBuffSmooth[IR]) && flags.iniciando == TRUE){
+		flags.iniciando = FALSE;
+		SetearThreshold();
+	}
+
+
+	if(!flags.iniciando){
+		RingBuffer_Pop(&RingBuffSmooth[RED], &data); //Descartamos el valor del led rojo
+		RingBuffer_Pop(&RingBuffSmooth[IR], &data);
+
+		if(pulse[IR].porDebajo && data > ThresholdSup){
+			indice = RingBuffSmooth[IR].tail - 1;
+			pulse[IR].Delta = indice - pulse[IR].pos_Cruce;
+			pulse[IR].pos_Cruce = indice;
+			pulse[IR].porDebajo = FALSE;
+			flags.beat_detected;
 		}
 
-		if((pulse->pos_Dmax - pos_aux) > 125)
-		{
-			new_peak[led_index] = TRUE;
-			pulse[led_index].Delta = pulse[led_index].pos_Dmax-pos_aux;
-			pulse[led_index].pos_Dmax = pos_aux;
+		if(data < ThresholdInf){
+			pulse[IR].porDebajo = TRUE;
 		}
 	}
 
-	if (new_peak[RED]) //Antes se usaban los dos, por que?
-	{
-		flags.beat_detected = TRUE;
-		new_peak[RED] = FALSE;
-		new_peak[IR] = FALSE;
-		get_min_max_values(pulse);
-	}
-
-	pulse[RED].pos_Dmax++;
-	pulse[IR].pos_Dmax++;
 	cuenta_impresas++;
 }
 
-void get_min_max_values(pulse_t pulse[2]){
-	led_t led_local;
-	uint16_t i, min, max, pos_Dmax;
+void SetearThreshold(void){
+	float max;
 
-	for (led_local = RED; led_local <= IR; led_local++) {
+	max = BuscarMaximo();
 
-		pos_Dmax = pulse[led_local].pos_Dmax;
-
-		min = smooth[led_local][pos_Dmax];
-
-		for(i = pos_Dmax; i < (pos_Dmax + MIN_WINDOW); i++){
-			if(smooth[led_local][i] < min)
-				min = smooth[led_local][i];
-		}
-
-		max = smooth[led_local][pos_Dmax];
-
-		for(i = pos_Dmax; i > (pos_Dmax - MAX_WINDOW) && i > 0; i--){
-			if(smooth[led_local][i] > max)
-				max = smooth[led_local][i];
-		}
-
-		shiftBuffer(pulse[led_local].Max, N_PROM);
-		shiftBuffer(pulse[led_local].Min, N_PROM);
-
-		pulse[led_local].Min[0] = min;
-		pulse[led_local].Max[0] = max;
-	}
+	ThresholdSup = 0.6*max;
+	ThresholdInf = 0.3*max;
 }
+
+float BuscarMaximo(void){
+	int i;
+	float max = 0;
+
+	for(i = 0; i < BUFFER_LENGTH; i++){
+		if(smooth[IR][i] > max){
+			max = smooth[IR][i];
+		}
+	}
+	return max;
+}
+
+//void get_min_max_values(pulse_t pulse[2]){
+//	led_t led_local;
+//	uint16_t i, min, max, pos_Dmax;
+//
+//	for (led_local = RED; led_local <= IR; led_local++) {
+//
+//		pos_Dmax = pulse[led_local].pos_Dmax;
+//
+//		min = smooth[led_local][pos_Dmax];
+//
+//		for(i = pos_Dmax; i < (pos_Dmax + MIN_WINDOW); i++){
+//			if(smooth[led_local][i] < min)
+//				min = smooth[led_local][i];
+//		}
+//
+//		max = smooth[led_local][pos_Dmax];
+//
+//		for(i = pos_Dmax; i > (pos_Dmax - MAX_WINDOW) && i > 0; i--){
+//			if(smooth[led_local][i] > max)
+//				max = smooth[led_local][i];
+//		}
+//
+//		shiftBuffer(pulse[led_local].Max, N_PROM);
+//		shiftBuffer(pulse[led_local].Min, N_PROM);
+//
+//		pulse[led_local].Min[0] = min;
+//		pulse[led_local].Max[0] = max;
+//	}
+//}
 //
 //float get_R_value(pulse_t *Data[2]){
 //

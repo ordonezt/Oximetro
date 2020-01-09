@@ -44,7 +44,8 @@ typedef struct		//Estructura para manejo de flags del sistema
 	uint16_t beat_detected:1;
 	uint16_t no_finger_times:3;
 	uint16_t adc_buffer_error:1;
-	uint16_t RESERVED:6;
+	uint16_t iniciando:1;
+	uint16_t RESERVED:5;
 }flags_t;
 
 extern volatile flags_t flags;
