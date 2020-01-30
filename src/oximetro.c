@@ -30,8 +30,6 @@ int main(void) {
 
     static uint32_t beatTick = 0, debounceTick = 0, displayTick = 0, uartTxTick = 0, checkFingerTick = 0;
 
-
-
     initSystem();
 
 #ifdef TEST

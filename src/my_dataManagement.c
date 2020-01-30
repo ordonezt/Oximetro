@@ -4,7 +4,9 @@
  *  Created on: 10 oct. 2019
  *      Author: ordonezt
  */
-
+#define ENVOLVENTE	0
+#define MAXIMO		1
+#define MODO ENVOLVENTE
 #include "my_include.h"
 
 extern RINGBUFF_T txring;
@@ -26,8 +28,6 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 {
 	uint8_t led_index;
 
-	uint8_t i, pos_aux = 0;
-
 	float data;
 	uint32_t indice;
 
@@ -37,9 +37,16 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 		RingBuffer_Insert(&RingBuffSmooth[led], &data);
 	}
 
-	if(RingBuffer_IsFull(&RingBuffSmooth[RED]) && RingBuffer_IsFull(&RingBuffSmooth[IR]) && flags.iniciando == TRUE){
+	if(flags.iniciando == TRUE && RingBuffer_IsFull(&RingBuffSmooth[RED]) && RingBuffer_IsFull(&RingBuffSmooth[IR])){
 		flags.iniciando = FALSE;
-		SetearThreshold();
+		//Resetear el buffer smooth
+		RingBuffSmooth[IR].tail = RingBuffSmooth[IR].head;
+		RingBuffSmooth[RED].tail = RingBuffSmooth[RED].head;
+		SetearThreshold(BUFFER_LENGTH);
+//		RingBuffSmooth[IR].tail = 0;
+//		RingBuffSmooth[IR].head = 0;
+		pulse[IR].porDebajo = FALSE;
+		pulse[IR].posCruce = 0;
 	}
 
 
@@ -47,14 +54,30 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 		RingBuffer_Pop(&RingBuffSmooth[RED], &data); //Descartamos el valor del led rojo
 		RingBuffer_Pop(&RingBuffSmooth[IR], &data);
 
+#if MODO == MAXIMO
 		if(pulse[IR].porDebajo && data > ThresholdSup){
 			indice = RingBuffSmooth[IR].tail - 1;
-			pulse[IR].Delta = indice - pulse[IR].pos_Cruce;
-			pulse[IR].pos_Cruce = indice;
+			if(pulse[IR].posCruce){ //TODO ver que pasa cuando por casualidad el cruce está en cero
+				pulse[IR].Delta = indice - pulse[IR].posCruce;
+				flags.beat_detected;
+				SetearThreshold(pulse[IR].Delta);
+			}
+			pulse[IR].posCruce = indice;
 			pulse[IR].porDebajo = FALSE;
-			flags.beat_detected;
 		}
-
+#endif
+#if MODO == ENVOLVENTE
+		SetearThreshold2(data);
+		if(pulse[IR].porDebajo && data > ThresholdSup){
+			indice = RingBuffSmooth[IR].tail - 1;
+			if(pulse[IR].posCruce){ //TODO ver que pasa cuando por casualidad el cruce está en cero
+				pulse[IR].Delta = indice - pulse[IR].posCruce;
+				flags.beat_detected;
+			}
+			pulse[IR].posCruce = indice;
+			pulse[IR].porDebajo = FALSE;
+		}
+#endif
 		if(data < ThresholdInf){
 			pulse[IR].porDebajo = TRUE;
 		}
@@ -63,27 +86,50 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 	cuenta_impresas++;
 }
 
-void SetearThreshold(void){
+void SetearThreshold(uint32_t len){
 	float max;
 
-	max = BuscarMaximo();
+	max = BuscarMaximo(len);
 
 	ThresholdSup = 0.6*max;
 	ThresholdInf = 0.3*max;
 }
 
-float BuscarMaximo(void){
+float BuscarMaximo(uint32_t len){
 	int i;
+	float data;
 	float max = 0;
 
-	for(i = 0; i < BUFFER_LENGTH; i++){
-		if(smooth[IR][i] > max){
-			max = smooth[IR][i];
+	RingBuffSmooth[IR].tail -= len;
+	for(i=0; i< len; i++){
+		RingBuffer_Pop(RingBuffSmooth, &data);
+		if(data > max){
+			max = data;
 		}
 	}
 	return max;
 }
 
+#if MODO == ENVOLVENTE
+void SetearThreshold2(float data){
+	static float envolvente, maximo;
+	static int n = 0;
+
+	if(envolvente <= data){
+		envolvente = data;
+		maximo = data;
+		n = 0;
+	}
+	else{
+		envolvente = maximo * exp(-0.001 * n);
+		n++;
+	}
+
+	ThresholdSup = 0.6*envolvente;
+	ThresholdInf = 0.3*envolvente; //TODO REVISAR VALORES EN AMBOS MODOS
+}
+
+#endif
 //void get_min_max_values(pulse_t pulse[2]){
 //	led_t led_local;
 //	uint16_t i, min, max, pos_Dmax;
