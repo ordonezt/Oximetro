@@ -22,4 +22,6 @@ void initSystem(void)
 
 	RingBuffer_Init(&RingBuffSmooth[RED], &smooth[RED], sizeof(smooth[RED][0]), BUFFER_LENGTH);
 	RingBuffer_Init(&RingBuffSmooth[IR], &smooth[IR], sizeof(smooth[IR][0]), BUFFER_LENGTH);
+
+	flags.iniciando = TRUE;
 }

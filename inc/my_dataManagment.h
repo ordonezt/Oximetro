@@ -28,6 +28,7 @@
 #define MIN_WINDOW 10   //
 
 #define N_PROM 	10
+#define TAO -0.002
 
 //-----------------------------------TIPOS DE DATOS-----------------------------
 
@@ -58,7 +59,7 @@ uint8_t checkFinger(void);
 void shiftBuffer(float *buffer, uint16_t length);
 void get_min_max_values(pulse_t *pulse);
 void process(pulse_t *pulse);
-float BuscarMaximo(uint32_t);
+void BuscarMaximo(uint32_t, float*,float*);
 void SetearThreshold(uint32_t);
 
 void SetearThreshold2(float data);

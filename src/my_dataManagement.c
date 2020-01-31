@@ -20,6 +20,7 @@ const uint8_t B = 25;
 float smooth[BUFFER_HEIGHT][BUFFER_LENGTH] = {0};
 float ThresholdSup = 0;
 float ThresholdInf = 0;
+float envolventeMax = 0, envolventeMin = 5000;
 
 volatile uint8_t cuenta_muestras = 0;
 uint32_t cuenta_impresas = 0;
@@ -34,7 +35,42 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 	for (led_index = RED; led_index < 2; led_index++)
 	{
 		data = filter((float)pulse[led_index].muestra, h, taps[led_index], N_RAW);
-		RingBuffer_Insert(&RingBuffSmooth[led], &data);
+		RingBuffer_Insert(&RingBuffSmooth[led_index], &data);
+	}
+
+	if(!flags.iniciando){
+		RingBuffer_Pop(&RingBuffSmooth[RED], &data); //Descartamos el valor del led rojo
+
+		if(RingBuffer_Pop(&RingBuffSmooth[IR], &data)){
+
+#if MODO == MAXIMO
+			if(pulse[IR].porDebajo && data > ThresholdSup){
+				indice = RingBuffSmooth[IR].tail - 1;
+				if(pulse[IR].posCruce){ //TODO ver que pasa cuando por casualidad el cruce está en cero
+					pulse[IR].Delta = indice - pulse[IR].posCruce;
+					flags.beat_detected = TRUE;
+					SetearThreshold(pulse[IR].Delta);
+				}
+				pulse[IR].posCruce = indice;
+				pulse[IR].porDebajo = FALSE;
+			}
+	#endif
+	#if MODO == ENVOLVENTE
+			SetearThreshold2(data);
+			if(pulse[IR].porDebajo && data > ThresholdSup){
+				indice = RingBuffSmooth[IR].tail - 1;
+				if(pulse[IR].posCruce){ //TODO ver que pasa cuando por casualidad el cruce está en cero
+					pulse[IR].Delta = indice - pulse[IR].posCruce;
+					flags.beat_detected = TRUE;
+				}
+				pulse[IR].posCruce = indice;
+				pulse[IR].porDebajo = FALSE;
+			}
+	#endif
+			if(data < ThresholdInf){
+				pulse[IR].porDebajo = TRUE;
+			}
+		}
 	}
 
 	if(flags.iniciando == TRUE && RingBuffer_IsFull(&RingBuffSmooth[RED]) && RingBuffer_IsFull(&RingBuffSmooth[IR])){
@@ -49,84 +85,67 @@ void process(pulse_t pulse[2]) //TODO que recibe que devuelve?? RECIBIMOS UN ARR
 		pulse[IR].posCruce = 0;
 	}
 
-
-	if(!flags.iniciando){
-		RingBuffer_Pop(&RingBuffSmooth[RED], &data); //Descartamos el valor del led rojo
-		RingBuffer_Pop(&RingBuffSmooth[IR], &data);
-
-#if MODO == MAXIMO
-		if(pulse[IR].porDebajo && data > ThresholdSup){
-			indice = RingBuffSmooth[IR].tail - 1;
-			if(pulse[IR].posCruce){ //TODO ver que pasa cuando por casualidad el cruce está en cero
-				pulse[IR].Delta = indice - pulse[IR].posCruce;
-				flags.beat_detected;
-				SetearThreshold(pulse[IR].Delta);
-			}
-			pulse[IR].posCruce = indice;
-			pulse[IR].porDebajo = FALSE;
-		}
-#endif
-#if MODO == ENVOLVENTE
-		SetearThreshold2(data);
-		if(pulse[IR].porDebajo && data > ThresholdSup){
-			indice = RingBuffSmooth[IR].tail - 1;
-			if(pulse[IR].posCruce){ //TODO ver que pasa cuando por casualidad el cruce está en cero
-				pulse[IR].Delta = indice - pulse[IR].posCruce;
-				flags.beat_detected;
-			}
-			pulse[IR].posCruce = indice;
-			pulse[IR].porDebajo = FALSE;
-		}
-#endif
-		if(data < ThresholdInf){
-			pulse[IR].porDebajo = TRUE;
-		}
-	}
-
 	cuenta_impresas++;
 }
 
 void SetearThreshold(uint32_t len){
-	float max;
+	float max = 0;
+	float min = 5000;
+	float Amp;
 
-	max = BuscarMaximo(len);
+	BuscarMaximo(len, &min, &max);
 
-	ThresholdSup = 0.6*max;
-	ThresholdInf = 0.3*max;
+	Amp = max - min;
+	ThresholdSup = min + 0.6 * Amp;
+	ThresholdInf = min + 0.4 * Amp;
 }
 
-float BuscarMaximo(uint32_t len){
+void BuscarMaximo(uint32_t len, float *min, float *max){
 	int i;
 	float data;
-	float max = 0;
 
 	RingBuffSmooth[IR].tail -= len;
 	for(i=0; i< len; i++){
-		RingBuffer_Pop(RingBuffSmooth, &data);
-		if(data > max){
-			max = data;
+		RingBuffer_Pop(&RingBuffSmooth[IR], &data);
+		if(data > *max){
+			*max = data;
+		}
+		if(data < *min){
+			*min = data;
 		}
 	}
-	return max;
+	return;
 }
 
 #if MODO == ENVOLVENTE
 void SetearThreshold2(float data){
-	static float envolvente, maximo;
-	static int n = 0;
+	float Amp;
+	//static float envolventeMax = 0, envolventeMin = 5000;
+	static float maximo, minimo;
+	static int n, n2 = 0;
 
-	if(envolvente <= data){
-		envolvente = data;
+	if(envolventeMax <= data){
+		envolventeMax = data;
 		maximo = data;
 		n = 0;
 	}
 	else{
-		envolvente = maximo * exp(-0.001 * n);
+		envolventeMax = ThresholdSup + (maximo - ThresholdSup) * exp(TAO * n);
 		n++;
 	}
+	if(envolventeMin >= data){
+		envolventeMin = data;
+		minimo = data;
+		n2 = 0;
+	}
+	else{
+		envolventeMin = ThresholdInf + (minimo - ThresholdInf) * exp(TAO * n2);
+		n2++;
+	}
 
-	ThresholdSup = 0.6*envolvente;
-	ThresholdInf = 0.3*envolvente; //TODO REVISAR VALORES EN AMBOS MODOS
+	Amp = envolventeMax - envolventeMin;
+	ThresholdSup = envolventeMin + 0.6 * Amp;
+	ThresholdInf = envolventeMin + 0.3 * Amp;
 }
 
 #endif
