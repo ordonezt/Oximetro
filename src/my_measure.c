@@ -31,12 +31,12 @@ uint8_t calculateBPM(uint8_t deltaN)
 //	if(new > MAX_BPM_ACEPTED && new < MIN_BPM_ACEPTED)
 //		return prom;
 //
-//	memory[index] = new;
-//	index++;
-//	index %= NUMBER_OF_BPMS;
-//
-//	prom = Average(memory, NUMBER_OF_BPMS);
-	return new;
+	memory[index] = new;
+	index++;
+	index %= NUMBER_OF_BPMS;
+
+	prom = Average(memory, NUMBER_OF_BPMS);
+	return prom;
 }
 
 uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr)

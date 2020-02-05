@@ -42,6 +42,7 @@ void updateDisplay(void) {
 	for(i=1;i<=cuenta_impresas;i++)
 	{
 		RingBuffer_Pop(&RingBuffSmooth[IR], &data);
+
 		if(!par){
 			for(j=0; j<SSD1306_HEIGHT; j++)  //BORRA TODA LA COLUMNA
 				OLED_DrawPixel(x,j,Black);
@@ -67,9 +68,17 @@ void updateDisplay(void) {
 				for(j=(uint32_t)smooth[IR][cuenta_impresas-i];j<=(uint32_t)smooth[IR][cuenta_impresas-i+ASDF];j++)
 									OLED_DrawPixel(x,(uint8_t)(SSD1306_HEIGHT-((SSD1306_HEIGHT*j)/6144)),White);
 			}*/
-			OLED_DrawPixel(x,(uint8_t)(SSD1306_HEIGHT-((SSD1306_HEIGHT*data)/6144)),White);
-			OLED_DrawPixel(x,(uint8_t)(SSD1306_HEIGHT-((SSD1306_HEIGHT*ThresholdInf)/6144)),White);
-			OLED_DrawPixel(x,(uint8_t)(SSD1306_HEIGHT-((SSD1306_HEIGHT*ThresholdSup)/6144)),White);
+//			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(data - globMin))/globMax)),White);
+//			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(envolventeMax - globMin))/globMax)),White);
+//			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(envolventeMin - globMin))/globMax)),White);
+
+			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(data - globMin))/globMax)),White);
+			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdInf - globMin))/globMax)),White);
+			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdSup - globMin))/globMax)),White);
+
+//			OLED_DrawPixel(x,(uint8_t)(SSD1306_HEIGHT-((SSD1306_HEIGHT*data)/6144)),White);
+//			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdInf - globMin))/globMax)),White);
+//			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdSup - globMin))/globMax)),White);
 
 			x++;
 			x= x%SSD1306_WIDTH;

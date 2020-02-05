@@ -22,6 +22,9 @@ float ThresholdSup = 0;
 float ThresholdInf = 0;
 float envolventeMax = 0, envolventeMin = 5000;
 
+float globMax;
+float globMin;
+
 volatile uint8_t cuenta_muestras = 0;
 uint32_t cuenta_impresas = 0;
 
@@ -94,6 +97,8 @@ void SetearThreshold(uint32_t len){
 	float Amp;
 
 	BuscarMaximo(len, &min, &max);
+	globMax = max;
+	globMin = min;
 
 	Amp = max - min;
 	ThresholdSup = min + 0.6 * Amp;
@@ -123,6 +128,10 @@ void SetearThreshold2(float data){
 	//static float envolventeMax = 0, envolventeMin = 5000;
 	static float maximo, minimo;
 	static int n, n2 = 0;
+	static float tao = 0;
+
+//	tao = -2 / (float)(maximo - minimo);
+	tao = TAO;
 
 	if(envolventeMax <= data){
 		envolventeMax = data;
@@ -130,7 +139,7 @@ void SetearThreshold2(float data){
 		n = 0;
 	}
 	else{
-		envolventeMax = ThresholdSup + (maximo - ThresholdSup) * exp(TAO * n);
+		envolventeMax = ThresholdSup + (maximo - ThresholdSup) * exp(tao * n);
 		n++;
 	}
 	if(envolventeMin >= data){
@@ -139,7 +148,7 @@ void SetearThreshold2(float data){
 		n2 = 0;
 	}
 	else{
-		envolventeMin = ThresholdInf + (minimo - ThresholdInf) * exp(TAO * n2);
+		envolventeMin = ThresholdInf + (minimo - ThresholdInf) * exp(tao * n2);
 		n2++;
 	}
 

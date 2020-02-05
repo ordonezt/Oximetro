@@ -54,6 +54,9 @@ extern float gradient[BUFFER_HEIGHT][N_GRADIENT];
 extern RINGBUFF_T RingBuffADC[BUFFER_HEIGHT];
 extern RINGBUFF_T RingBuffSmooth[BUFFER_HEIGHT];
 
+extern float globMax;
+extern float globMin;
+
 //-----------------------------------PROTOTIPOS----------------------------------
 uint8_t checkFinger(void);
 void shiftBuffer(float *buffer, uint16_t length);
