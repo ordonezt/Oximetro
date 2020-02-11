@@ -11,11 +11,11 @@ void Calculate(pulse_t *pulse) {
 	spo2 = calculateSpO2(pulse[RED], pulse[IR]);
 }
 
-uint8_t calculateBPM(uint8_t deltaN)
+uint32_t calculateBPM(uint32_t deltaN)
 {
-	static uint8_t memory[NUMBER_OF_BPMS];
-	static uint8_t index = 0, count = 0, prom = 0;
-	uint8_t new;
+	static uint32_t memory[NUMBER_OF_BPMS];
+	static uint8_t index = 0, count = 0;
+	uint32_t new, prom = 0;
 	float abs;
 
 	new = 60000 / (deltaN * SAMPLE_PERIOD);
@@ -80,9 +80,9 @@ uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr)
 	return SpO2;
 }
 
-uint8_t Average(uint8_t *array, uint8_t len){
+uint32_t Average(uint32_t *array, uint8_t len){
 	uint8_t i;
-	uint16_t sum = 0;
+	uint32_t sum = 0;
 
 	for(i=0; i<len; i++)
 		sum += array[i];

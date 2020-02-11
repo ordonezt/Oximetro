@@ -4,9 +4,12 @@
  *  Created on: 20 oct. 2019
  *      Author: ordonezt
  */
-
-
 #include "my_include.h"
+
+#define COMUN	0
+#define FLANCO	1
+
+#define DISPLAY COMUN
 
 extern uint32_t cuenta_impresas;
 extern float bpm;
@@ -47,6 +50,7 @@ void updateDisplay(void) {
 			for(j=0; j<SSD1306_HEIGHT; j++)  //BORRA TODA LA COLUMNA
 				OLED_DrawPixel(x,j,Black);
 
+#if DISPLAY == FLANCO
 //			if(gradient[IR][cuenta_impresas-i]>=gradient[IR][cuenta_impresas-i+ASDF])
 //			{
 //				for(j=(uint32_t)gradient[IR][cuenta_impresas-i+ASDF];j<=(uint32_t)gradient[IR][cuenta_impresas-i];j++)
@@ -68,31 +72,35 @@ void updateDisplay(void) {
 				for(j=(uint32_t)smooth[IR][cuenta_impresas-i];j<=(uint32_t)smooth[IR][cuenta_impresas-i+ASDF];j++)
 									OLED_DrawPixel(x,(uint8_t)(SSD1306_HEIGHT-((SSD1306_HEIGHT*j)/6144)),White);
 			}*/
+#endif
+
+#if DISPLAY == COMUN
 //			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(data - globMin))/globMax)),White);
 //			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(envolventeMax - globMin))/globMax)),White);
 //			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(envolventeMin - globMin))/globMax)),White);
 
-			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(data - globMin))/globMax)),White);
-			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdInf - globMin))/globMax)),White);
-			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdSup - globMin))/globMax)),White);
-
-//			OLED_DrawPixel(x,(uint8_t)(SSD1306_HEIGHT-((SSD1306_HEIGHT*data)/6144)),White);
+//			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(data - globMin))/globMax)),White);
 //			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdInf - globMin))/globMax)),White);
 //			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdSup - globMin))/globMax)),White);
+
+			OLED_DrawPixel(x,(uint8_t)(SSD1306_HEIGHT-((SSD1306_HEIGHT*data)/6144)),White);
+//			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdInf - globMin))/globMax)),White);
+//			OLED_DrawPixel(x,(uint8_t)(((SSD1306_HEIGHT*(ThresholdSup - globMin))/globMax)),White);
+#endif
+
+
 
 			x++;
 			x= x%SSD1306_WIDTH;
 			par=ASDF;
 		}
+		if(RingBuffSmooth[IR].tail==pulsos[IR].posCruce+1)
+					for(j=25; j<SSD1306_HEIGHT; j++)
+							OLED_DrawPixel(x-1,j,White);
 		par--;
-
-
-
 	}
 	cuenta_impresas=0;
 
-//	for(j=25; j<SSD1306_HEIGHT; j++)
-//			OLED_DrawPixel(x-pulsos[IR].pos_Dmax/ASDF,j,White);
 
 	OLED_SetCursor(0, 0);
 	OLED_WriteString("Freq=",Font_7x10,White);
