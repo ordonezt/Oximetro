@@ -41,10 +41,10 @@ void updateDisplay(void) {
 	uint32_t i,j;
 	char str[10];
 
-	RingBuffSmooth[IR].tail -= cuenta_impresas;
+	RingBuffSmooth[RED].tail -= cuenta_impresas;
 	for(i=1;i<=cuenta_impresas;i++)
 	{
-		RingBuffer_Pop(&RingBuffSmooth[IR], &data);
+		RingBuffer_Pop(&RingBuffSmooth[RED], &data);
 
 		if(!par){
 			for(j=0; j<SSD1306_HEIGHT; j++)  //BORRA TODA LA COLUMNA
@@ -94,7 +94,7 @@ void updateDisplay(void) {
 			x= x%SSD1306_WIDTH;
 			par=ASDF;
 		}
-		if(RingBuffSmooth[IR].tail==pulsos[IR].posCruce+1)
+		if(RingBuffSmooth[RED].tail==pulsos[RED].posCruce+1)
 					for(j=25; j<SSD1306_HEIGHT; j++)
 							OLED_DrawPixel(x-1,j,White);
 		par--;
@@ -108,10 +108,10 @@ void updateDisplay(void) {
 	OLED_WriteString(itoa(((int)bpm)%1000,str,10),Font_7x10,White);
 	OLED_WriteString("bpm ",Font_7x10,White);
 	OLED_SetCursor(0, 11);
-	OLED_WriteString("spO2=",Font_7x10,White);
-	//OLED_SetCursor(42, 11);
-	OLED_WriteString(itoa(((int)spo2%1000)%1000,str,10),Font_7x10,White);
-	OLED_WriteString("% ",Font_7x10,White);
+//	OLED_WriteString("spO2=",Font_7x10,White);
+//	//OLED_SetCursor(42, 11);
+//	OLED_WriteString(itoa(((int)spo2%1000)%1000,str,10),Font_7x10,White);
+//	OLED_WriteString("% ",Font_7x10,White);
 
 	OLED_UpdateScreen();
 

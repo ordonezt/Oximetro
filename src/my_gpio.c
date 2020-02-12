@@ -8,7 +8,7 @@
 #include "my_include.h"
 
 volatile key_t button = {0};
-volatile led_t led = RED;
+volatile led_t led = IR;
 
 void initGpio(void)
 {
@@ -19,7 +19,13 @@ void initGpio(void)
 	//Pin salida para estado P0.22
 	Chip_IOCON_PinMuxSet(LPC_IOCON, STATE_PORT, STATE_PIN, IOCON_FUNC0);
 	Chip_GPIO_WriteDirBit(LPC_GPIO, STATE_PORT, STATE_PIN, TRUE);
-	Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);
+//	Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);
+	Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);
+
+//	//Pin salida para estado P0.22
+//	Chip_IOCON_PinMuxSet(LPC_IOCON, STATE_GABINETE_PORT, STATE_GABINETE_PIN, IOCON_FUNC0);
+//	Chip_GPIO_WriteDirBit(LPC_GPIO, STATE_GABINETE_PORT, STATE_GABINETE_PIN, TRUE);
+//	Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_GABINETE_PORT, STATE_GABINETE_PIN);
 
 	//Pin salida para blink P3.26
 	Chip_IOCON_PinMuxSet(LPC_IOCON, BLINK_PORT, BLINK_PIN, IOCON_FUNC0);

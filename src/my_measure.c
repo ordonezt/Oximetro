@@ -7,8 +7,8 @@
 #include "my_include.h"
 
 void Calculate(pulse_t *pulse) {
-	bpm = calculateBPM(pulse[IR].Delta);
-	spo2 = calculateSpO2(pulse[RED], pulse[IR]);
+	bpm = calculateBPM(pulse[RED].Delta);
+	spo2 = calculateSpO2(pulse[IR], pulse[RED]);
 }
 
 uint32_t calculateBPM(uint32_t deltaN)
@@ -70,7 +70,7 @@ uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr)
 
 		for(i = 0; i < SAMPLES_LENGTH; i++)
 	{
-		R = log10(MAX[RED][i] / MIN[RED][i]) / log10(MAX[IR][i] / MIN[IR][i]);
+		R = log10(MAX[IR][i] / MIN[IR][i]) / log10(MAX[RED][i] / MIN[RED][i]);
 		SpO2 += A - (B * R);
 	}
 

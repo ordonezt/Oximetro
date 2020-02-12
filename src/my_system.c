@@ -15,13 +15,13 @@ void initSystem(void)
 	initADC();		//Inicializo el ADC
 	initUart();
 	setLedState(AWAKE);
-	led = IR;
+	led = RED;
 	setLed(led);
 	initOLED();
 	tick = 0;
 
-	RingBuffer_Init(&RingBuffSmooth[RED], &smooth[RED], sizeof(smooth[RED][0]), BUFFER_LENGTH);
 	RingBuffer_Init(&RingBuffSmooth[IR], &smooth[IR], sizeof(smooth[IR][0]), BUFFER_LENGTH);
+	RingBuffer_Init(&RingBuffSmooth[RED], &smooth[RED], sizeof(smooth[RED][0]), BUFFER_LENGTH);
 
 	flags.iniciando = TRUE;
 }

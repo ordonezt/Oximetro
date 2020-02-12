@@ -47,16 +47,16 @@ int main(void) {
 		switch(power_state)
 		{
 			case AWAKE:
-				while(!RingBuffer_IsEmpty(&RingBuffADC[IR]) && !RingBuffer_IsEmpty(&RingBuffADC[RED]))
+				while(!RingBuffer_IsEmpty(&RingBuffADC[RED]) && !RingBuffer_IsEmpty(&RingBuffADC[IR]))
 				{
-					RingBuffer_Pop(&RingBuffADC[RED], &pulsos[RED].muestra);
 					RingBuffer_Pop(&RingBuffADC[IR], &pulsos[IR].muestra);
+					RingBuffer_Pop(&RingBuffADC[RED], &pulsos[RED].muestra);
 					process(pulsos);
 				}
 				if(flags.beat_detected)
 				{
 					flags.beat_detected = FALSE;
-					Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);	//Prende led
+					Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);	//Prende led
 					beatTick = tick;
 					Calculate(pulsos);
 				}
@@ -70,7 +70,7 @@ int main(void) {
 				}
 
 				if(tick - beatTick >= BEAT_TICKS)
-					Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);	//Apaga led
+					Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);	//Apaga led
 
 				if(tick - checkFingerTick >= CHECK_FINGER_TICKS)
 				{

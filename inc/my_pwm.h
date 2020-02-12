@@ -9,10 +9,10 @@
 #define MY_PWM_H_
 
 #define RED_PORT 	0
-#define RED_PIN		28
+#define RED_PIN		27
 
 #define IR_PORT		0
-#define IR_PIN		27
+#define IR_PIN		28
 
 #define RED_PWM 	PWM1
 #define IR_PWM		PWM2

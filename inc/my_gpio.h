@@ -13,6 +13,9 @@
 #define STATE_PORT			0
 #define STATE_PIN			22
 
+//#define STATE_GABINETE_PORT
+//#define	STATE_GABINETE_PIN
+
 #define BLINK_PORT			3
 #define BLINK_PIN			26
 
@@ -36,7 +39,7 @@ typedef struct{
 	bool wasRelease;
 }key_t;
 
-typedef enum{RED, IR}led_t;
+typedef enum{IR, RED}led_t;
 
 extern volatile led_t led;
 
