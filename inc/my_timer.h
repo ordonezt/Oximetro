@@ -17,6 +17,7 @@
 #define BEAT_TICKS			30
 #define BLINK_TICKS			1000
 #define CHECK_FINGER_TICKS 	1000
+#define CALCULATE_TICKS 	4000
 
 extern uint32_t tick;
 

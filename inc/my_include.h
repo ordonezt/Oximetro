@@ -11,6 +11,7 @@
 #include "math.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "board.h"
 #include "my_power.h"
 #include "my_extInt.h"

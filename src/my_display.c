@@ -12,7 +12,6 @@
 #define DISPLAY COMUN
 
 extern uint32_t cuenta_impresas;
-extern float bpm;
 extern float spo2;
 extern float ThresholdInf;
 extern float ThresholdSup;
@@ -21,7 +20,7 @@ extern float envolventeMax;
 
 extern pulse_t pulsos[BUFFER_HEIGHT];
 
-#define ASDF 5
+#define ASDF 10
 
 
 void updateDisplay(void) {
@@ -105,7 +104,7 @@ void updateDisplay(void) {
 	OLED_SetCursor(0, 0);
 	OLED_WriteString("Freq=",Font_7x10,White);
 	//OLED_SetCursor(42, 0);
-	OLED_WriteString(itoa(((int)bpm)%1000,str,10),Font_7x10,White);
+	OLED_WriteString(itoa(bpm,str,10),Font_7x10,White);
 	OLED_WriteString("bpm ",Font_7x10,White);
 	OLED_SetCursor(0, 11);
 //	OLED_WriteString("spO2=",Font_7x10,White);

@@ -17,7 +17,6 @@ static uint8_t  txbuff[UART_SRB_SIZE], rxbuff[UART_RRB_SIZE];
 
 #define UART_Def (LPC_UART0)	/* Defined uart */
 
-extern float freq, bpm;
 
 void initUart(void){
 	Chip_IOCON_PinMux(LPC_IOCON, 0, 2, IOCON_MODE_INACT, IOCON_FUNC1);	// P0.2 as Txd0

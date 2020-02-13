@@ -462,8 +462,8 @@ void initOLED(void){
     SSD1306.Initialized = 1;
 	OLED_SetCursor(0, 0);
 	OLED_WriteString("Freq:",Font_7x10,White);
-	OLED_SetCursor(0, 11);
-	OLED_WriteString("spO2:",Font_7x10,White);
+//	OLED_SetCursor(0, 11);
+//	OLED_WriteString("spO2:",Font_7x10,White);
 }
 
 // Fill the whole screen with the given color

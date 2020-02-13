@@ -6,11 +6,44 @@
  */
 #include "my_include.h"
 
-void Calculate(pulse_t *pulse) {
-	bpm = calculateBPM(pulse[RED].Delta);
-	spo2 = calculateSpO2(pulse[IR], pulse[RED]);
+float bpmVector[BPM_WINDOW] = {0};
+
+//void Calculate(pulse_t *pulse) {
+//	bpm = calculateBPM(pulse[RED].Delta);
+//	spo2 = calculateSpO2(pulse[IR], pulse[RED]);
+//}
+
+void Calculate (void) {
+	uint8_t i, count = 0;
+	float tmp;
+
+	static float sum = 0;
+
+
+	for (i = 0; i < BPM_WINDOW; i++) {
+		tmp = bpmVector[i];
+		if (tmp != 0) {
+			sum += tmp;
+			count++;
+		}
+	}
+
+	memset(bpmVector, 0, sizeof(*bpmVector) * BPM_WINDOW);
+
+	sum /= count;
+
+	bpm = (uint32_t)((sum * 10 + 0.5) / 10 + 0.5);
+	sum = 0;
 }
 
+void stackMeasure (pulse_t *pulse) {
+	static uint8_t i = 0;
+
+	bpmVector[i] = 	60000 / (float)(pulse[RED].Delta * SAMPLE_PERIOD);
+
+	i++;
+	i %= BPM_WINDOW;
+}
 uint32_t calculateBPM(uint32_t deltaN)
 {
 	static uint32_t memory[NUMBER_OF_BPMS];
@@ -18,7 +51,7 @@ uint32_t calculateBPM(uint32_t deltaN)
 	uint32_t new, prom = 0;
 	float abs;
 
-	new = 60000 / (deltaN * SAMPLE_PERIOD);
+	new = ((60000 / (float)(deltaN * SAMPLE_PERIOD)) * 10 + 0.5) / 10 + 0.5;
 
 //	if(count < NUMBER_OF_BPMS){
 //		memory[index] = new;

@@ -14,7 +14,8 @@ volatile flags_t flags = {0};
 SPI_CONFIG_FORMAT_T spi_format;
 SPI_DATA_SETUP_T spi_xf;
 
-float bpm = 0;
+//float bpm = 0;
+uint32_t bpm;
 float spo2 = 0;
 
 pulse_t pulsos[BUFFER_HEIGHT] = {0};
@@ -28,7 +29,7 @@ int main(void) {
 
     statePwr_t power_state = AWAKE;
 
-    static uint32_t beatTick = 0, debounceTick = 0, displayTick = 0, uartTxTick = 0, checkFingerTick = 0;
+    static uint32_t calculateTick = 0, beatTick = 0, debounceTick = 0, displayTick = 0, uartTxTick = 0, checkFingerTick = 0;
 
     initSystem();
 
@@ -58,7 +59,12 @@ int main(void) {
 					flags.beat_detected = FALSE;
 					Chip_GPIO_SetPinOutHigh(LPC_GPIO, STATE_PORT, STATE_PIN);	//Prende led
 					beatTick = tick;
-					Calculate(pulsos);
+					stackMeasure(pulsos);
+				}
+
+				if (tick - calculateTick >= CALCULATE_TICKS) {
+					calculateTick = tick;
+					Calculate();
 				}
 
 				if(button.wasRelease || flags.no_finger_times == MAX_NO_FINGER_TIME)
@@ -69,8 +75,10 @@ int main(void) {
 					setLedState(SLEEP);
 				}
 
-				if(tick - beatTick >= BEAT_TICKS)
+				if(tick - beatTick >= BEAT_TICKS) {
+					beatTick = tick;
 					Chip_GPIO_SetPinOutLow(LPC_GPIO, STATE_PORT, STATE_PIN);	//Apaga led
+				}
 
 				if(tick - checkFingerTick >= CHECK_FINGER_TICKS)
 				{

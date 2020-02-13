@@ -12,10 +12,15 @@
 #define MAX_BPM_ACEPTED 300
 #define MIN_BPM_ACEPTED 20
 
-void Calculate(pulse_t*);
+#define BPM_WINDOW	20
+
+//void Calculate(pulse_t*);
 uint32_t calculateBPM(uint32_t);
 uint8_t calculateSpO2(pulse_t pulseRed, pulse_t pulseIr);
 uint32_t Average(uint32_t*, uint8_t);
 
-extern float bpm;
+void stackMeasure (pulse_t *pulse);
+void Calculate (void);
+
+extern uint32_t bpm;
 extern float spo2;
