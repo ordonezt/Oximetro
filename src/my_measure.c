@@ -18,7 +18,7 @@ void Calculate (void) {
 	float tmp;
 
 	static float sum = 0;
-
+	static float oldBpm = 0;
 
 	for (i = 0; i < BPM_WINDOW; i++) {
 		tmp = bpmVector[i];
@@ -30,9 +30,12 @@ void Calculate (void) {
 
 	memset(bpmVector, 0, sizeof(*bpmVector) * BPM_WINDOW);
 
+//	sum += oldBpm;
+//	sum /= count + 1;
+//	oldBpm = sum;
 	sum /= count;
 
-	bpm = (uint32_t)((sum * 10 + 0.5) / 10 + 0.5);
+	bpm = (uint32_t)(sum + 0.5);
 	sum = 0;
 }
 
